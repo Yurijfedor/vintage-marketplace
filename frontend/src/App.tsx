@@ -1,9 +1,16 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import HomePage from "./pages/HomePage";
+
 function App() {
   return (
-    <div>
-      <h1>Vintage Marketplace</h1>
-      <p>Unsere Plattform für Vintage- und Sammlerartikel.</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
