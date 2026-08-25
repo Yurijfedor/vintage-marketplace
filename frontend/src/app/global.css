@@ -205,6 +205,17 @@ input {
   border-color: #bbb;
 }
 
+.category-chip--selected {
+  background: #222;
+  border-color: #222;
+  color: #fff;
+}
+
+.category-chip--selected:hover {
+  background: #333;
+  border-color: #333;
+}
+
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -395,4 +406,38 @@ input {
   .product-page__details h1 {
     font-size: 28px;
   }
+}
+
+.results-info {
+  margin: 6px 0 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.empty-state {
+  padding: 64px 24px;
+  background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.empty-state h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+
+.empty-state p {
+  margin: 0 0 24px;
+  color: #777;
+}
+
+.empty-state__button {
+  height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
 }

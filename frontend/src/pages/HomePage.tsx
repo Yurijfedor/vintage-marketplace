@@ -1,8 +1,39 @@
+import { useMemo, useState } from "react";
+import type { SubmitEvent } from "react";
 import ProductCard from "../features/products/ProductCard";
 import { categories } from "../features/products/categories";
+import { filterProducts } from "../features/products/productFilters";
 import { mockProducts } from "../features/products/mockProducts";
 
 function HomePage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [submittedSearch, setSubmittedSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const filteredProducts = useMemo(
+    () => filterProducts(mockProducts, submittedSearch, selectedCategory),
+    [submittedSearch, selectedCategory],
+  );
+
+  function handleSearch(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmittedSearch(searchTerm);
+  }
+
+  function handleCategoryClick(category: string) {
+    setSelectedCategory((currentCategory) =>
+      currentCategory === category ? null : category,
+    );
+  }
+
+  function handleResetFilters() {
+    setSearchTerm("");
+    setSubmittedSearch("");
+    setSelectedCategory(null);
+  }
+
+  const hasFilters = submittedSearch.length > 0 || selectedCategory !== null;
+
   return (
     <div className="home-page">
       <section className="hero">
@@ -13,9 +44,11 @@ function HomePage() {
             Vintage, Sammlerartikel und besondere Fundstücke aus zweiter Hand.
           </p>
 
-          <form className="search-form">
+          <form className="search-form" onSubmit={handleSearch}>
             <input
               type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Was suchen Sie?"
               aria-label="Suche"
             />
@@ -31,28 +64,73 @@ function HomePage() {
         </div>
 
         <div className="categories-list">
-          {categories.map((category) => (
-            <button type="button" className="category-chip" key={category}>
-              {category}
-            </button>
-          ))}
+          {categories.map((category) => {
+            const isSelected = selectedCategory === category;
+
+            return (
+              <button
+                type="button"
+                className={`category-chip ${
+                  isSelected ? "category-chip--selected" : ""
+                }`}
+                key={category}
+                onClick={() => handleCategoryClick(category)}
+              >
+                {category}
+              </button>
+            );
+          })}
         </div>
       </section>
 
       <section className="products-section">
         <div className="section-heading">
-          <h2>Neue Angebote</h2>
+          <div>
+            <h2>{hasFilters ? "Suchergebnisse" : "Neue Angebote"}</h2>
 
-          <button type="button" className="section-heading__link">
-            Alle ansehen
-          </button>
+            {hasFilters && (
+              <p className="results-info">
+                {filteredProducts.length}{" "}
+                {filteredProducts.length === 1 ? "Artikel" : "Artikel"} gefunden
+              </p>
+            )}
+          </div>
+
+          {hasFilters && (
+            <button
+              type="button"
+              className="section-heading__link"
+              onClick={handleResetFilters}
+            >
+              Filter zurücksetzen
+            </button>
+          )}
         </div>
 
-        <div className="products-grid">
-          {mockProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {filteredProducts.length > 0 ? (
+          <div className="products-grid">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <h3>Keine Artikel gefunden</h3>
+
+            <p>
+              Versuchen Sie einen anderen Suchbegriff oder eine andere
+              Kategorie.
+            </p>
+
+            <button
+              type="button"
+              className="empty-state__button"
+              onClick={handleResetFilters}
+            >
+              Filter zurücksetzen
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
