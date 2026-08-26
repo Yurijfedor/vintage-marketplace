@@ -441,3 +441,49 @@ input {
   color: #fff;
   cursor: pointer;
 }
+
+.catalog-page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.catalog-page__header h1 {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.catalog-page__header p {
+  margin: 10px 0 0;
+  color: #666;
+}
+
+.catalog-page__count {
+  color: #777;
+  white-space: nowrap;
+}
+
+.product-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.catalog-page__products {
+  margin-top: 0;
+}
+
+@media (max-width: 600px) {
+  .catalog-page__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-page__header h1 {
+    font-size: 32px;
+  }
+}
