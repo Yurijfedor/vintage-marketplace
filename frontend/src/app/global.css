@@ -500,3 +500,10 @@ input {
   color: #777;
   white-space: nowrap;
 }
+
+.product-card__auction-info {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #777;
+}

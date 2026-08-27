@@ -5,15 +5,26 @@ export type ProductCondition =
   | "used"
   | "damaged";
 
-export type ListingType = "fixed-price" | "auction";
-
-export interface Product {
+export interface BaseProduct {
   id: string;
   title: string;
   category: string;
-  price: number;
   condition: ProductCondition;
   imageUrl: string;
   sellerName: string;
-  listingType: ListingType;
 }
+
+export interface FixedPriceProduct extends BaseProduct {
+  listingType: "fixed-price";
+  price: number;
+}
+
+export interface AuctionProduct extends BaseProduct {
+  listingType: "auction";
+  startingPrice: number;
+  currentBid: number | null;
+  bidCount: number;
+  auctionEndsAt: string;
+}
+
+export type Product = FixedPriceProduct | AuctionProduct;

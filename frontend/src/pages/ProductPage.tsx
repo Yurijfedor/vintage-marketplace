@@ -36,8 +36,32 @@ function ProductPage() {
           <h1>{product.title}</h1>
 
           <strong className="product-page__price">
-            {product.price.toFixed(2).replace(".", ",")} €
+            {product.listingType === "auction"
+              ? `${(product.currentBid ?? product.startingPrice)
+                  .toFixed(2)
+                  .replace(".", ",")} €`
+              : `${product.price.toFixed(2).replace(".", ",")} €`}
           </strong>
+
+          {product.listingType === "auction" ? (
+            <p>
+              Aktuelles Gebot:{" "}
+              <strong>
+                {(product.currentBid ?? product.startingPrice)
+                  .toFixed(2)
+                  .replace(".", ",")}{" "}
+                €
+              </strong>
+            </p>
+          ) : (
+            <p>Festpreis</p>
+          )}
+
+          {product.listingType === "auction" && (
+            <p>
+              Gebote: <strong>{product.bidCount}</strong>
+            </p>
+          )}
 
           <p>
             Verkäufer: <strong>{product.sellerName}</strong>

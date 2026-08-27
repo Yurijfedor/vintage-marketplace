@@ -35,7 +35,11 @@ function ProductCard({ product }: ProductCardProps) {
           <div className="product-card__footer">
             <div className="product-card__price-row">
               <strong className="product-card__price">
-                {product.price.toFixed(2).replace(".", ",")} €
+                {product.listingType === "auction"
+                  ? `${(product.currentBid ?? product.startingPrice)
+                      .toFixed(2)
+                      .replace(".", ",")} €`
+                  : `${product.price.toFixed(2).replace(".", ",")} €`}
               </strong>
 
               <span className="product-card__listing-type">
@@ -44,6 +48,12 @@ function ProductCard({ product }: ProductCardProps) {
                   : "Sofort kaufen"}
               </span>
             </div>
+
+            {product.listingType === "auction" && (
+              <span className="product-card__auction-info">
+                {product.bidCount} {product.bidCount === 1 ? "Gebot" : "Gebote"}
+              </span>
+            )}
 
             <span className="product-card__seller">{product.sellerName}</span>
           </div>
