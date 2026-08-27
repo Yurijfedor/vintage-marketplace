@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { mockProducts } from "../features/products/mockProducts";
+import Countdown from "../features/products/Countdown";
 
 function ProductPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -44,15 +45,23 @@ function ProductPage() {
           </strong>
 
           {product.listingType === "auction" ? (
-            <p>
-              Aktuelles Gebot:{" "}
-              <strong>
-                {(product.currentBid ?? product.startingPrice)
-                  .toFixed(2)
-                  .replace(".", ",")}{" "}
-                €
-              </strong>
-            </p>
+            <>
+              <p>
+                Aktuelles Gebot:{" "}
+                <strong>
+                  {(product.currentBid ?? product.startingPrice)
+                    .toFixed(2)
+                    .replace(".", ",")}{" "}
+                  €
+                </strong>
+              </p>
+
+              <p>
+                Gebote: <strong>{product.bidCount}</strong>
+              </p>
+
+              <Countdown targetDate={product.auctionEndsAt} />
+            </>
           ) : (
             <p>Festpreis</p>
           )}

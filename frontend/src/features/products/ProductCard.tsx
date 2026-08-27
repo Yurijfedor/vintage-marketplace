@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import type { Product } from "../../types/product";
+import Countdown from "./Countdown";
 
 interface ProductCardProps {
   product: Product;
@@ -53,6 +54,10 @@ function ProductCard({ product }: ProductCardProps) {
               <span className="product-card__auction-info">
                 {product.bidCount} {product.bidCount === 1 ? "Gebot" : "Gebote"}
               </span>
+            )}
+
+            {product.listingType === "auction" && (
+              <Countdown targetDate={product.auctionEndsAt} />
             )}
 
             <span className="product-card__seller">{product.sellerName}</span>
