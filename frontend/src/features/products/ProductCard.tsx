@@ -33,9 +33,17 @@ function ProductCard({ product }: ProductCardProps) {
           <h3 className="product-card__title">{product.title}</h3>
 
           <div className="product-card__footer">
-            <strong className="product-card__price">
-              {product.price.toFixed(2).replace(".", ",")} €
-            </strong>
+            <div className="product-card__price-row">
+              <strong className="product-card__price">
+                {product.price.toFixed(2).replace(".", ",")} €
+              </strong>
+
+              <span className="product-card__listing-type">
+                {product.listingType === "auction"
+                  ? "Auktion"
+                  : "Sofort kaufen"}
+              </span>
+            </div>
 
             <span className="product-card__seller">{product.sellerName}</span>
           </div>

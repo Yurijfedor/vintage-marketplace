@@ -5,6 +5,8 @@ export type ProductCondition =
   | "used"
   | "damaged";
 
+export type ListingType = "fixed-price" | "auction";
+
 export interface Product {
   id: string;
   title: string;
@@ -13,4 +15,5 @@ export interface Product {
   condition: ProductCondition;
   imageUrl: string;
   sellerName: string;
+  listingType: ListingType;
 }

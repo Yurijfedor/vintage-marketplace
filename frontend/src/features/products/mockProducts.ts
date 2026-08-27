@@ -10,6 +10,7 @@ export const mockProducts: Product[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1577083288073-40892c0860a4?auto=format&fit=crop&w=800&q=80",
     sellerName: "VintageShop",
+    listingType: "fixed-price",
   },
   {
     id: "2",
@@ -20,6 +21,7 @@ export const mockProducts: Product[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?auto=format&fit=crop&w=800&q=80",
     sellerName: "RetroSound",
+    listingType: "auction",
   },
   {
     id: "3",
@@ -30,6 +32,7 @@ export const mockProducts: Product[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?auto=format&fit=crop&w=800&q=80",
     sellerName: "SecondLife",
+    listingType: "fixed-price",
   },
   {
     id: "4",
@@ -40,5 +43,6 @@ export const mockProducts: Product[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
     sellerName: "AntikCorner",
+    listingType: "auction",
   },
 ];
