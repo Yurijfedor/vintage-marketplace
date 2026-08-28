@@ -5,6 +5,8 @@ export type ProductCondition =
   | "used"
   | "damaged";
 
+export type ListingType = "fixed-price" | "auction";
+
 export interface BaseProduct {
   id: string;
   title: string;

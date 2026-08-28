@@ -1,6 +1,11 @@
 import { Link, useParams } from "react-router-dom";
 import { mockProducts } from "../features/products/mockProducts";
 import Countdown from "../features/products/Countdown";
+import {
+  formatCondition,
+  // formatListingType,
+  formatPrice,
+} from "../features/products/productFormatters";
 
 function ProductPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -38,10 +43,8 @@ function ProductPage() {
 
           <strong className="product-page__price">
             {product.listingType === "auction"
-              ? `${(product.currentBid ?? product.startingPrice)
-                  .toFixed(2)
-                  .replace(".", ",")} €`
-              : `${product.price.toFixed(2).replace(".", ",")} €`}
+              ? formatPrice(product.currentBid ?? product.startingPrice)
+              : formatPrice(product.price)}
           </strong>
 
           {product.listingType === "auction" ? (
@@ -77,7 +80,7 @@ function ProductPage() {
           </p>
 
           <p>
-            Zustand: <strong>{product.condition}</strong>
+            Zustand: <strong>{formatCondition(product.condition)}</strong>
           </p>
 
           <button type="button" className="product-page__button">

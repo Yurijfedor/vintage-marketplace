@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import type { Product } from "../../types/product";
 import Countdown from "./Countdown";
+import { formatListingType, formatPrice } from "./productFormatters";
 
 interface ProductCardProps {
   product: Product;
@@ -37,16 +38,12 @@ function ProductCard({ product }: ProductCardProps) {
             <div className="product-card__price-row">
               <strong className="product-card__price">
                 {product.listingType === "auction"
-                  ? `${(product.currentBid ?? product.startingPrice)
-                      .toFixed(2)
-                      .replace(".", ",")} €`
-                  : `${product.price.toFixed(2).replace(".", ",")} €`}
+                  ? formatPrice(product.currentBid ?? product.startingPrice)
+                  : formatPrice(product.price)}
               </strong>
 
               <span className="product-card__listing-type">
-                {product.listingType === "auction"
-                  ? "Auktion"
-                  : "Sofort kaufen"}
+                {formatListingType(product.listingType)}
               </span>
             </div>
 
