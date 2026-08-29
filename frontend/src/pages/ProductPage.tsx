@@ -1,14 +1,12 @@
 import { Link, useParams } from "react-router-dom";
+
+import ProductDetails from "../features/products/ProductDetails";
 import { mockProducts } from "../features/products/mockProducts";
-import Countdown from "../features/products/Countdown";
-import {
-  formatCondition,
-  // formatListingType,
-  formatPrice,
-} from "../features/products/productFormatters";
 
 function ProductPage() {
-  const { productId } = useParams<{ productId: string }>();
+  const { productId } = useParams<{
+    productId: string;
+  }>();
 
   const product = mockProducts.find((item) => item.id === productId);
 
@@ -36,57 +34,7 @@ function ProductPage() {
           />
         </div>
 
-        <div className="product-page__details">
-          <span className="product-card__category">{product.category}</span>
-
-          <h1>{product.title}</h1>
-
-          <strong className="product-page__price">
-            {product.listingType === "auction"
-              ? formatPrice(product.currentBid ?? product.startingPrice)
-              : formatPrice(product.price)}
-          </strong>
-
-          {product.listingType === "auction" ? (
-            <>
-              <p>
-                Aktuelles Gebot:{" "}
-                <strong>
-                  {(product.currentBid ?? product.startingPrice)
-                    .toFixed(2)
-                    .replace(".", ",")}{" "}
-                  €
-                </strong>
-              </p>
-
-              <p>
-                Gebote: <strong>{product.bidCount}</strong>
-              </p>
-
-              <Countdown targetDate={product.auctionEndsAt} />
-            </>
-          ) : (
-            <p>Festpreis</p>
-          )}
-
-          {product.listingType === "auction" && (
-            <p>
-              Gebote: <strong>{product.bidCount}</strong>
-            </p>
-          )}
-
-          <p>
-            Verkäufer: <strong>{product.sellerName}</strong>
-          </p>
-
-          <p>
-            Zustand: <strong>{formatCondition(product.condition)}</strong>
-          </p>
-
-          <button type="button" className="product-page__button">
-            Kaufen
-          </button>
-        </div>
+        <ProductDetails product={product} />
       </div>
     </section>
   );

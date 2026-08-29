@@ -518,3 +518,71 @@ input {
 .countdown--expired {
   color: #999;
 }
+
+.bid-form {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.bid-form h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.bid-form__input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.bid-form__input-row input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  outline: none;
+}
+
+.bid-form__input-row input:focus {
+  border-color: #999;
+}
+
+.bid-form__input-row button {
+  height: 48px;
+  padding: 0 20px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #222;
+  color: #fff;
+
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bid-form__message {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.bid-form__message--error {
+  color: #b42318;
+}
+
+.bid-form__message--success {
+  color: #287a3e;
+}
+
+@media (max-width: 600px) {
+  .bid-form__input-row {
+    flex-direction: column;
+  }
+
+  .bid-form__input-row button {
+    width: 100%;
+  }
+}
