@@ -1,15 +1,27 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
+import { getMinimumBid, isValidBid } from "./auctionRules";
 
 interface BidFormProps {
   currentBid: number;
   onBidSubmit: (amount: number) => void;
+  isAuctionActive: boolean;
 }
 
-function BidForm({ currentBid, onBidSubmit }: BidFormProps) {
+function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  if (!isAuctionActive) {
+    return (
+      <div className="bid-form bid-form--ended">
+        <h3>Auktion beendet</h3>
+
+        <p>Für diese Auktion können keine Gebote mehr abgegeben werden.</p>
+      </div>
+    );
+  }
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,11 +42,13 @@ function BidForm({ currentBid, onBidSubmit }: BidFormProps) {
       return;
     }
 
-    if (numericAmount <= currentBid) {
+    const minimumBid = getMinimumBid(currentBid);
+
+    if (!isValidBid(numericAmount, currentBid)) {
       setError(
-        `Ihr Gebot muss höher als ${currentBid
+        `Das Mindestgebot beträgt ${minimumBid
           .toFixed(2)
-          .replace(".", ",")} € sein.`,
+          .replace(".", ",")} €.`,
       );
       return;
     }
@@ -56,7 +70,9 @@ function BidForm({ currentBid, onBidSubmit }: BidFormProps) {
             inputMode="decimal"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            placeholder="z. B. 16,00"
+            placeholder={`Mindestens ${getMinimumBid(currentBid)
+              .toFixed(2)
+              .replace(".", ",")} €`}
             aria-label="Ihr Gebot"
           />
 

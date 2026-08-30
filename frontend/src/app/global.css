@@ -586,3 +586,18 @@ input {
     width: 100%;
   }
 }
+
+.bid-form--ended {
+  padding: 20px;
+  background: #f5f5f3;
+  border-radius: 10px;
+}
+
+.bid-form--ended h3 {
+  margin: 0 0 8px;
+}
+
+.bid-form--ended p {
+  margin: 0;
+  color: #777;
+}
