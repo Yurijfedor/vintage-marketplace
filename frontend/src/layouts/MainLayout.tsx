@@ -1,25 +1,10 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import Header from "../components/Header";
 
 function MainLayout() {
   return (
     <div className="site">
-      <header className="site-header">
-        <div className="site-header__inner">
-          <Link to="/" className="site-logo">
-            Vintage Marketplace
-          </Link>
-
-          <nav className="site-nav">
-            <Link to="/categories">Kategorien</Link>
-            <Link to="/auctions">Auktionen</Link>
-            <Link to="/about">Über uns</Link>
-          </nav>
-
-          <div className="site-header__actions">
-            <Link to="/login">Anmelden</Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="site-main">
         <Outlet />
