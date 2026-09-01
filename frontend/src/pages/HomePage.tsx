@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { SubmitEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../features/products/ProductCard";
 import { categories } from "../features/products/categories";
 import { filterProducts } from "../features/products/productFilters";
@@ -7,17 +8,25 @@ import { mockProducts } from "../features/products/mockProducts";
 
 function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [submittedSearch, setSubmittedSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   const filteredProducts = useMemo(
-    () => filterProducts(mockProducts, submittedSearch, selectedCategory),
-    [submittedSearch, selectedCategory],
+    () => filterProducts(mockProducts, "", selectedCategory),
+    [selectedCategory],
   );
 
   function handleSearch(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmittedSearch(searchTerm);
+
+    const query = searchTerm.trim();
+
+    if (!query) {
+      return;
+    }
+
+    navigate(`/search?q=${encodeURIComponent(query)}`);
   }
 
   function handleCategoryClick(category: string) {
@@ -28,11 +37,10 @@ function HomePage() {
 
   function handleResetFilters() {
     setSearchTerm("");
-    setSubmittedSearch("");
     setSelectedCategory(null);
   }
 
-  const hasFilters = submittedSearch.length > 0 || selectedCategory !== null;
+  const hasFilters = selectedCategory !== null;
 
   return (
     <div className="home-page">

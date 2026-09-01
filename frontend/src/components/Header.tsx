@@ -1,6 +1,23 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import type { SubmitEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  function handleSearch(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const query = searchTerm.trim();
+
+    if (!query) {
+      return;
+    }
+
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+  }
+
   return (
     <header className="site-header">
       <div className="site-header__top">
@@ -8,9 +25,11 @@ function Header() {
           Vintage
         </Link>
 
-        <form className="header-search">
+        <form className="header-search" onSubmit={handleSearch}>
           <input
             type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Was suchen Sie?"
             aria-label="Suche"
           />

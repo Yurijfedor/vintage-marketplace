@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import AuctionsPage from "./pages/AuctionsPage";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/products/:productId" element={<ProductPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/auctions" element={<AuctionsPage />} />
+          <Route path="/search" element={<SearchPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
