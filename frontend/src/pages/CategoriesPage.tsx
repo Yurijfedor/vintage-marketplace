@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import ProductCard from "../features/products/ProductCard";
 import ProductFilters from "../features/products/ProductFilters.tsx";
 import { categories } from "../features/products/categories";
@@ -7,7 +7,9 @@ import { filterProducts } from "../features/products/productFilters";
 import { mockProducts } from "../features/products/mockProducts";
 
 function CategoriesPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const selectedCategory = searchParams.get("category");
 
   const filteredProducts = useMemo(
     () => filterProducts(mockProducts, "", selectedCategory),
@@ -31,7 +33,13 @@ function CategoriesPage() {
       <ProductFilters
         categories={categories}
         selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
+        onCategoryChange={(category) => {
+          if (category) {
+            setSearchParams({ category });
+          } else {
+            setSearchParams({});
+          }
+        }}
       />
 
       {filteredProducts.length > 0 ? (
