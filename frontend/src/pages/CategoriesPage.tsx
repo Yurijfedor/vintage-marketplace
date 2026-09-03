@@ -18,7 +18,9 @@ function CategoriesPage() {
   const sortParam = searchParams.get("sort");
 
   const selectedSort: ProductSortOption =
-    sortParam === "price-desc" ? "price-desc" : "price-asc";
+    sortParam === "price-asc" || sortParam === "price-desc"
+      ? sortParam
+      : "newest";
 
   const filteredProducts = useMemo(
     () => filterProducts(mockProducts, "", selectedCategory),
@@ -60,6 +62,8 @@ function CategoriesPage() {
             setSearchParams(nextParams);
           }}
         >
+          <option value="newest">Neueste zuerst</option>
+
           <option value="price-asc">Preis: niedrig zuerst</option>
 
           <option value="price-desc">Preis: hoch zuerst</option>

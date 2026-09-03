@@ -14,6 +14,7 @@ export interface BaseProduct {
   condition: ProductCondition;
   imageUrl: string;
   sellerName: string;
+  createdAt: string;
 }
 
 export interface FixedPriceProduct extends BaseProduct {
