@@ -1,5 +1,5 @@
 import AuctionDetails from "./AuctionDetails";
-import { formatCondition, formatPrice } from "./productFormatters";
+import { formatCondition, formatDate, formatPrice } from "./productFormatters";
 import type { Product } from "../../types/product";
 
 interface ProductDetailsProps {
@@ -31,6 +31,10 @@ function ProductDetails({ product }: ProductDetailsProps) {
 
       <p>
         Verkäufer: <strong>{product.sellerName}</strong>
+      </p>
+
+      <p>
+        Eingestellt am: <strong>{formatDate(product.createdAt)}</strong>
       </p>
 
       {product.listingType === "fixed-price" && (

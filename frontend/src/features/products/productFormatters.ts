@@ -31,3 +31,11 @@ export function formatCondition(condition: ProductCondition): string {
 export function formatListingType(listingType: ListingType): string {
   return listingType === "auction" ? "Auktion" : "Sofort kaufen";
 }
+
+export function formatDate(date: string): string {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(date));
+}
