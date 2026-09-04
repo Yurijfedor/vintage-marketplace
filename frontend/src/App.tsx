@@ -5,6 +5,7 @@ import ProductPage from "./pages/ProductPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import AuctionsPage from "./pages/AuctionsPage";
 import SearchPage from "./pages/SearchPage";
+import SellerPage from "./pages/SellerPage";
 
 function App() {
   return (
@@ -12,9 +13,15 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
+
           <Route path="/products/:productId" element={<ProductPage />} />
+
+          <Route path="/sellers/:sellerName" element={<SellerPage />} />
+
           <Route path="/categories" element={<CategoriesPage />} />
+
           <Route path="/auctions" element={<AuctionsPage />} />
+
           <Route path="/search" element={<SearchPage />} />
         </Route>
       </Routes>

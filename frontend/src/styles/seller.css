@@ -1,0 +1,38 @@
+.seller-page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.seller-page__header h1 {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.seller-page__header p {
+  margin: 10px 0 0;
+  color: #666;
+}
+
+.seller-page__count {
+  color: #777;
+  white-space: nowrap;
+}
+
+.seller-page__products {
+  margin-top: 0;
+}
+
+@media (max-width: 600px) {
+  .seller-page__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .seller-page__header h1 {
+    font-size: 32px;
+  }
+}

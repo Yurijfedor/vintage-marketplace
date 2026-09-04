@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import AuctionDetails from "./AuctionDetails";
 import { formatCondition, formatDate, formatPrice } from "./productFormatters";
 import type { Product } from "../../types/product";
@@ -30,7 +31,13 @@ function ProductDetails({ product }: ProductDetailsProps) {
       </p>
 
       <p>
-        Verkäufer: <strong>{product.sellerName}</strong>
+        Verkäufer:{" "}
+        <Link
+          to={`/sellers/${encodeURIComponent(product.sellerName)}`}
+          className="product-page__seller"
+        >
+          {product.sellerName}
+        </Link>
       </p>
 
       <p>
