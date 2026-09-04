@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import type { ProductCondition } from "../types/product";
 import {
   sortProducts,
   type ProductSortOption,
@@ -15,6 +16,17 @@ function CategoriesPage() {
 
   const selectedCategory = searchParams.get("category");
 
+  const conditionParam = searchParams.get("condition");
+
+  const selectedCondition: ProductCondition | null =
+    conditionParam === "new" ||
+    conditionParam === "very-good" ||
+    conditionParam === "good" ||
+    conditionParam === "used" ||
+    conditionParam === "damaged"
+      ? conditionParam
+      : null;
+
   const sortParam = searchParams.get("sort");
 
   const selectedSort: ProductSortOption =
@@ -23,8 +35,8 @@ function CategoriesPage() {
       : "newest";
 
   const filteredProducts = useMemo(
-    () => filterProducts(mockProducts, "", selectedCategory),
-    [selectedCategory],
+    () => filterProducts(mockProducts, "", selectedCategory, selectedCondition),
+    [selectedCategory, selectedCondition],
   );
 
   const sortedProducts = useMemo(
@@ -73,6 +85,7 @@ function CategoriesPage() {
       <ProductFilters
         categories={categories}
         selectedCategory={selectedCategory}
+        selectedCondition={selectedCondition}
         onCategoryChange={(category) => {
           const nextParams = new URLSearchParams(searchParams);
 
@@ -80,6 +93,17 @@ function CategoriesPage() {
             nextParams.set("category", category);
           } else {
             nextParams.delete("category");
+          }
+
+          setSearchParams(nextParams);
+        }}
+        onConditionChange={(condition) => {
+          const nextParams = new URLSearchParams(searchParams);
+
+          if (condition) {
+            nextParams.set("condition", condition);
+          } else {
+            nextParams.delete("condition");
           }
 
           setSearchParams(nextParams);

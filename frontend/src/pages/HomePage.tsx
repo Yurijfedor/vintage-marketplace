@@ -13,7 +13,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   const filteredProducts = useMemo(
-    () => filterProducts(mockProducts, "", selectedCategory),
+    () => filterProducts(mockProducts, "", selectedCategory, null),
     [selectedCategory],
   );
 

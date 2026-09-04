@@ -1,9 +1,10 @@
-import type { Product } from "../../types/product";
+import type { Product, ProductCondition } from "../../types/product";
 
 export function filterProducts(
   products: Product[],
   searchTerm: string,
   category: string | null,
+  condition: ProductCondition | null,
 ): Product[] {
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
@@ -15,6 +16,9 @@ export function filterProducts(
 
     const matchesCategory = category === null || product.category === category;
 
-    return matchesSearch && matchesCategory;
+    const matchesCondition =
+      condition === null || product.condition === condition;
+
+    return matchesSearch && matchesCategory && matchesCondition;
   });
 }
