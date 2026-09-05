@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useFavorites } from "../favorites/useFavorites";
 import AuctionDetails from "./AuctionDetails";
 import { formatCondition, formatDate, formatPrice } from "./productFormatters";
 import type { Product } from "../../types/product";
@@ -8,6 +9,10 @@ interface ProductDetailsProps {
 }
 
 function ProductDetails({ product }: ProductDetailsProps) {
+  const { toggleFavorite, isFavorite } = useFavorites();
+
+  const favorite = isFavorite(product.id);
+
   return (
     <div className="product-page__details">
       <span className="product-card__category">{product.category}</span>
@@ -43,6 +48,16 @@ function ProductDetails({ product }: ProductDetailsProps) {
       <p>
         Eingestellt am: <strong>{formatDate(product.createdAt)}</strong>
       </p>
+
+      <button
+        type="button"
+        className={`product-page__favorite ${
+          favorite ? "product-page__favorite--active" : ""
+        }`}
+        onClick={() => toggleFavorite(product.id)}
+      >
+        {favorite ? "♥ Aus Favoriten entfernen" : "♡ Zu Favoriten hinzufügen"}
+      </button>
 
       {product.listingType === "fixed-price" && (
         <button type="button" className="product-page__button">

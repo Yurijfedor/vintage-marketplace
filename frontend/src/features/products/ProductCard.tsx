@@ -3,12 +3,17 @@ import { Link } from "react-router-dom";
 import type { Product } from "../../types/product";
 import Countdown from "./Countdown";
 import { formatListingType, formatPrice } from "./productFormatters";
+import { useFavorites } from "../favorites/useFavorites";
 
 interface ProductCardProps {
   product: Product;
 }
 
 function ProductCard({ product }: ProductCardProps) {
+  const { toggleFavorite, isFavorite } = useFavorites();
+
+  const favorite = isFavorite(product.id);
+
   return (
     <article className="product-card">
       <Link to={`/products/${product.id}`}>
@@ -21,11 +26,18 @@ function ProductCard({ product }: ProductCardProps) {
 
           <button
             type="button"
-            className="product-card__favorite"
-            aria-label="Zu Favoriten hinzufügen"
-            onClick={(event) => event.preventDefault()}
+            className={`product-card__favorite ${
+              favorite ? "product-card__favorite--active" : ""
+            }`}
+            aria-label={
+              favorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"
+            }
+            onClick={(event) => {
+              event.preventDefault();
+              toggleFavorite(product.id);
+            }}
           >
-            ♡
+            {favorite ? "♥" : "♡"}
           </button>
         </div>
 

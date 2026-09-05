@@ -1,10 +1,12 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useFavorites } from "../features/favorites/useFavorites";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const { favoriteProductIds } = useFavorites();
 
   function handleSearch(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,13 +42,19 @@ function Header() {
         </form>
 
         <div className="site-header__actions">
-          <button
-            type="button"
+          <Link
+            to="/favorites"
             className="header-action"
-            aria-label="Favoriten"
+            aria-label={`Favoriten (${favoriteProductIds.length})`}
           >
-            ♡
-          </button>
+            {favoriteProductIds.length > 0 ? "♥" : "♡"}
+
+            {favoriteProductIds.length > 0 && (
+              <span className="header-action__count">
+                {favoriteProductIds.length}
+              </span>
+            )}
+          </Link>
 
           <button
             type="button"

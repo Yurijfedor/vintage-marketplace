@@ -6,6 +6,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import AuctionsPage from "./pages/AuctionsPage";
 import SearchPage from "./pages/SearchPage";
 import SellerPage from "./pages/SellerPage";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
           <Route path="/auctions" element={<AuctionsPage />} />
 
           <Route path="/search" element={<SearchPage />} />
+
+          <Route path="/favorites" element={<FavoritesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
