@@ -7,6 +7,7 @@ import AuctionsPage from "./pages/AuctionsPage";
 import SearchPage from "./pages/SearchPage";
 import SellerPage from "./pages/SellerPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import CartPage from "./pages/CartPage";
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
           <Route path="/search" element={<SearchPage />} />
 
           <Route path="/favorites" element={<FavoritesPage />} />
+
+          <Route path="/cart" element={<CartPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -2,11 +2,18 @@ import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFavorites } from "../features/favorites/useFavorites";
+import { useCart } from "../features/cart/useCart";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const { favoriteProductIds } = useFavorites();
+  const { cartItems } = useCart();
+
+  const cartItemsCount = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
 
   function handleSearch(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,13 +63,16 @@ function Header() {
             )}
           </Link>
 
-          <button
-            type="button"
+          <Link
+            to="/cart"
             className="header-action"
-            aria-label="Warenkorb"
+            aria-label={`Warenkorb (${cartItemsCount})`}
           >
             🛒
-          </button>
+            {cartItemsCount > 0 && (
+              <span className="header-action__count">{cartItemsCount}</span>
+            )}
+          </Link>
 
           <Link to="/login" className="header-login">
             Anmelden
@@ -77,7 +87,7 @@ function Header() {
 
         <Link to="/categories">Neu eingestellt</Link>
 
-        <Link to="/categories">Beliebt</Link>
+        <Link to="/favorites">Beliebt</Link>
       </nav>
     </header>
   );

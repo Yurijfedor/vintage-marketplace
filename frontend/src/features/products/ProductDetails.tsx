@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useFavorites } from "../favorites/useFavorites";
+import { useCart } from "../cart/useCart";
 import AuctionDetails from "./AuctionDetails";
 import { formatCondition, formatDate, formatPrice } from "./productFormatters";
 import type { Product } from "../../types/product";
@@ -9,6 +10,7 @@ interface ProductDetailsProps {
 }
 
 function ProductDetails({ product }: ProductDetailsProps) {
+  const { addToCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
 
   const favorite = isFavorite(product.id);
@@ -60,7 +62,11 @@ function ProductDetails({ product }: ProductDetailsProps) {
       </button>
 
       {product.listingType === "fixed-price" && (
-        <button type="button" className="product-page__button">
+        <button
+          type="button"
+          className="product-page__button"
+          onClick={() => addToCart(product.id)}
+        >
           Kaufen
         </button>
       )}
