@@ -64,6 +64,17 @@ function HomePage() {
             <button type="submit">Suchen</button>
           </form>
         </div>
+
+        <div className="hero__gallery" aria-hidden="true">
+          {mockProducts.slice(0, 3).map((product, index) => (
+            <img
+              key={product.id}
+              src={product.imageUrl}
+              alt=""
+              className={`hero__image hero__image--${index + 1}`}
+            />
+          ))}
+        </div>
       </section>
 
       <section className="categories-section">

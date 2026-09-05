@@ -241,6 +241,16 @@ input {
   font-size: 14px;
 }
 
+/* =========================
+   Home page
+   ========================= */
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
 .home-page h1 {
   margin-top: 0;
   font-size: 42px;
@@ -252,60 +262,163 @@ input {
   color: #666;
 }
 
+/* =========================
+   Hero
+   ========================= */
+
 .hero {
-  padding: 72px 48px;
-  background: #ffffff;
-  border-radius: 20px;
-  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  padding: 96px 32px;
+
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(255, 255, 255, 0.28),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(126, 94, 67, 0.22),
+      transparent 50%
+    ),
+    linear-gradient(135deg, #e8dfd2 0%, #d4c0aa 50%, #b89b7b 100%);
+}
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  top: -220px;
+  right: -120px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 320px;
+  height: 320px;
+
+  bottom: -180px;
+  left: -100px;
+
+  border-radius: 50%;
+
+  background: rgba(84, 62, 45, 0.1);
+
+  pointer-events: none;
 }
 
 .hero__content {
+  position: relative;
+  z-index: 2;
+
   max-width: 760px;
-  margin: 0 auto;
+}
+
+.hero__gallery {
+  display: none;
 }
 
 .hero h1 {
+  max-width: 700px;
+
   margin: 0;
-  font-size: clamp(36px, 5vw, 56px);
+
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   line-height: 1.05;
+
   letter-spacing: -0.03em;
 }
 
 .hero p {
-  margin: 20px 0 32px;
-  color: #666;
-  font-size: 18px;
+  max-width: 620px;
+
+  margin: 24px 0 32px;
+
+  font-size: 1.125rem;
+  line-height: 1.7;
 }
+
+/* =========================
+   Hero search
+   ========================= */
 
 .search-form {
   display: flex;
-  max-width: 680px;
-  margin: 0 auto;
-  gap: 8px;
+
+  max-width: 640px;
+
+  padding: 6px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.78);
+
+  box-shadow: 0 12px 32px rgba(55, 40, 28, 0.12);
+
+  backdrop-filter: blur(8px);
 }
 
 .search-form input {
   flex: 1;
+
   min-width: 0;
-  height: 52px;
-  padding: 0 18px;
-  border: 1px solid #d8d8d8;
-  border-radius: 10px;
+
+  padding: 14px 18px;
+
+  border: 0;
+
   outline: none;
+
+  background: transparent;
+
+  font: inherit;
 }
 
-.search-form input:focus {
-  border-color: #999;
+.search-form input::placeholder {
+  color: #7a7068;
 }
 
 .search-form button {
-  height: 52px;
-  padding: 0 28px;
+  padding: 14px 28px;
+
   border: 0;
+
   border-radius: 10px;
-  background: #222;
-  color: #fff;
+
+  background: #2d2d2d;
+  color: white;
+
+  font: inherit;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.search-form button:hover {
+  transform: translateY(-1px);
+
+  opacity: 0.92;
 }
 
 .categories-section,
@@ -800,4 +913,86 @@ input {
 .bid-form--ended p {
   margin: 0;
   color: #777;
+}
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 768px) {
+  .home-page {
+    gap: 32px;
+  }
+
+  .hero {
+    padding: 64px 24px;
+
+    border-radius: 18px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+
+    padding: 8px;
+  }
+
+  .search-form input {
+    width: 100%;
+  }
+
+  .search-form button {
+    width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 420px;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .hero__content {
+    max-width: 620px;
+  }
+
+  .hero__gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 150px 150px;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 18px;
+    border: 4px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+  }
+
+  .hero__image--1 {
+    grid-row: span 2;
+    height: 100%;
+  }
+
+  .hero__image--2 {
+    transform: translateY(3px);
+  }
+
+  .hero__image--3 {
+    transform: translateY(-3px);
+  }
 }
