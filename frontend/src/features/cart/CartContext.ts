@@ -2,6 +2,7 @@ import { createContext } from "react";
 
 export interface CartItem {
   productId: string;
+
   quantity: number;
 }
 
@@ -17,6 +18,8 @@ export interface CartContextValue {
   decreaseQuantity: (productId: string) => void;
 
   getQuantity: (productId: string) => number;
+
+  clearCart: () => void;
 }
 
 export const CartContext = createContext<CartContextValue | null>(null);

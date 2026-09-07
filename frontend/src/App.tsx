@@ -8,6 +8,8 @@ import SearchPage from "./pages/SearchPage";
 import SellerPage from "./pages/SellerPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 
 function App() {
   return (
@@ -29,6 +31,10 @@ function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
 
           <Route path="/cart" element={<CartPage />} />
+
+          <Route path="/checkout" element={<CheckoutPage />} />
+
+          <Route path="/order-success" element={<OrderSuccessPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

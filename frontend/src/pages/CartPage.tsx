@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 
 import { useCart } from "../features/cart/useCart";
 import { mockProducts } from "../features/products/mockProducts";
@@ -84,9 +85,9 @@ function CartPage() {
               Gesamtsumme: <strong>{formatPrice(totalPrice)}</strong>
             </p>
 
-            <button type="button" className="cart-summary__checkout">
+            <Link to="/checkout" className="cart-summary__checkout">
               Zur Kasse
-            </button>
+            </Link>
           </aside>
         )}
       </div>

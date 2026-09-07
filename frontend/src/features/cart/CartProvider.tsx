@@ -78,6 +78,10 @@ export function CartProvider({ children }: CartProviderProps) {
     );
   }
 
+  function clearCart() {
+    setCartItems([]);
+  }
+
   function getQuantity(productId: string): number {
     return (
       cartItems.find((item) => item.productId === productId)?.quantity ?? 0
@@ -92,6 +96,7 @@ export function CartProvider({ children }: CartProviderProps) {
       increaseQuantity,
       decreaseQuantity,
       getQuantity,
+      clearCart,
     }),
     [cartItems],
   );
