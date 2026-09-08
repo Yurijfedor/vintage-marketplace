@@ -106,3 +106,15 @@
     gap: 10px;
   }
 }
+
+.order-card__details-link {
+  display: inline-flex;
+  margin-top: 20px;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.order-card__details-link:hover {
+  text-decoration: underline;
+}

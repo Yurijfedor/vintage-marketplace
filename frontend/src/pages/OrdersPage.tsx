@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useOrders } from "../features/orders/useOrders";
 
 function OrdersPage() {
@@ -51,6 +52,13 @@ function OrdersPage() {
 
                 <strong>{order.totalPrice.toFixed(2)} €</strong>
               </div>
+
+              <Link
+                to={`/orders/${order.id}`}
+                className="order-card__details-link"
+              >
+                Details ansehen →
+              </Link>
             </article>
           ))}
         </div>

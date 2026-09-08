@@ -12,6 +12,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import OrdersPage from "./pages/OrdersPage";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 
 function App() {
   return (
@@ -39,6 +40,8 @@ function App() {
           <Route path="/order-success" element={<OrderSuccessPage />} />
 
           <Route path="/orders" element={<OrdersPage />} />
+
+          <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
