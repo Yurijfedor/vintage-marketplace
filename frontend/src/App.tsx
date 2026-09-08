@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
@@ -10,6 +11,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import OrdersPage from "./pages/OrdersPage";
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
 
           <Route path="/order-success" element={<OrderSuccessPage />} />
+
+          <Route path="/orders" element={<OrdersPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -3,15 +3,16 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../features/cart/useCart";
+import { useOrders } from "../features/orders/useOrders";
 import { mockProducts } from "../features/products/mockProducts";
 import { formatPrice } from "../features/products/productFormatters";
-
-type PaymentMethod = "invoice" | "paypal" | "card";
+import type { Order, PaymentMethod } from "../types/order";
 
 function CheckoutPage() {
   const navigate = useNavigate();
 
   const { cartItems, clearCart } = useCart();
+  const { addOrder } = useOrders();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -84,6 +85,37 @@ function CheckoutPage() {
 
       return;
     }
+
+    const order: Order = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+
+      status: "confirmed",
+
+      address: {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        street: street.trim(),
+        postalCode: postalCode.trim(),
+        city: city.trim(),
+      },
+
+      paymentMethod,
+
+      items: cartProducts.map(({ product, quantity }) => ({
+        productId: product.id,
+        title: product.title,
+        imageUrl: product.imageUrl,
+        sellerName: product.sellerName,
+        quantity,
+        price: product.price,
+      })),
+
+      totalItems,
+      totalPrice,
+    };
+
+    addOrder(order);
 
     clearCart();
 
