@@ -13,6 +13,9 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
+import SellerListingsPage from "./pages/SellerListingsPage";
+import CreateListingPage from "./pages/CreateListingPage";
+import EditListingPage from "./pages/EditListingPage";
 
 function App() {
   return (
@@ -24,6 +27,15 @@ function App() {
           <Route path="/products/:productId" element={<ProductPage />} />
 
           <Route path="/sellers/:sellerName" element={<SellerPage />} />
+
+          <Route path="/seller/listings" element={<SellerListingsPage />} />
+
+          <Route path="/seller/listings/new" element={<CreateListingPage />} />
+
+          <Route
+            path="/seller/listings/:productId/edit"
+            element={<EditListingPage />}
+          />
 
           <Route path="/categories" element={<CategoriesPage />} />
 
