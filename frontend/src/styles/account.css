@@ -1,0 +1,41 @@
+.account-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.account-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+}
+
+.account-card:hover {
+  border-color: #aaa;
+}
+
+.account-card h2 {
+  margin: 0;
+}
+
+.account-card p {
+  margin: 0;
+}
+
+.account-card span {
+  font-weight: 600;
+  margin-top: auto;
+}
+
+@media (max-width: 800px) {
+  .account-page__grid {
+    grid-template-columns: 1fr;
+  }
+}

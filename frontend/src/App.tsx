@@ -16,6 +16,7 @@ import OrderDetailsPage from "./pages/OrderDetailsPage";
 import SellerListingsPage from "./pages/SellerListingsPage";
 import CreateListingPage from "./pages/CreateListingPage";
 import EditListingPage from "./pages/EditListingPage";
+import AccountPage from "./pages/AccountPage";
 
 function App() {
   return (
@@ -46,6 +47,8 @@ function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
 
           <Route path="/cart" element={<CartPage />} />
+
+          <Route path="/account" element={<AccountPage />} />
 
           <Route path="/checkout" element={<CheckoutPage />} />
 

@@ -78,8 +78,8 @@ function Header() {
             Verkaufen
           </Link>
 
-          <Link to="/login" className="header-login">
-            Anmelden
+          <Link to="/account" className="header-login">
+            Mein Bereich
           </Link>
         </div>
       </div>
