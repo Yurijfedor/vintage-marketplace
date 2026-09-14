@@ -6,21 +6,20 @@ import { CartProvider } from "./features/cart/CartProvider";
 import { FavoritesProvider } from "./features/favorites/FavoritesProvider";
 import { OrdersProvider } from "./features/orders/OrdersProvider";
 import { ProductsProvider } from "./features/products/ProductsProvider";
+import { AuthProvider } from "./features/auth/AuthProvider";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {" "}
-    <ProductsProvider>
-      {" "}
-      <FavoritesProvider>
-        {" "}
-        <CartProvider>
-          {" "}
-          <OrdersProvider>
-            {" "}
-            <App />{" "}
-          </OrdersProvider>{" "}
-        </CartProvider>{" "}
-      </FavoritesProvider>{" "}
-    </ProductsProvider>{" "}
+    <AuthProvider>
+      <ProductsProvider>
+        <FavoritesProvider>
+          <CartProvider>
+            <OrdersProvider>
+              <App />
+            </OrdersProvider>
+          </CartProvider>
+        </FavoritesProvider>
+      </ProductsProvider>
+    </AuthProvider>
   </StrictMode>,
 );
