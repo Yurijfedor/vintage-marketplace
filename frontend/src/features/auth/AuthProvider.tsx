@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
-import type { User } from "../../types/auth";
+import type { User, UserRole } from "../../types/auth";
+
+import { authenticateUser, registerUser } from "./authStorage";
 
 import { AuthContext, type AuthContextValue } from "./AuthContext";
 
@@ -35,8 +37,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
   }, [user]);
 
-  function login(nextUser: User) {
-    setUser(nextUser);
+  function login(email: string, password: string): boolean {
+    const authenticatedUser = authenticateUser(email, password);
+
+    if (!authenticatedUser) {
+      return false;
+    }
+
+    setUser(authenticatedUser);
+
+    return true;
+  }
+
+  function register(
+    name: string,
+    email: string,
+    password: string,
+    role: UserRole,
+  ): boolean {
+    const registeredUser = registerUser(name, email, password, role);
+
+    if (!registeredUser) {
+      return false;
+    }
+
+    setUser(registeredUser);
+
+    return true;
   }
 
   function logout() {
@@ -48,6 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       isAuthenticated: user !== null,
       login,
+      register,
       logout,
     }),
     [user],
