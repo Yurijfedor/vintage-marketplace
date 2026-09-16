@@ -1,14 +1,20 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import { useFavorites } from "../features/favorites/useFavorites";
 import { useCart } from "../features/cart/useCart";
+import { useAuth } from "../features/auth/useAuth";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
+
   const navigate = useNavigate();
+  const location = useLocation();
+
   const { favoriteProductIds } = useFavorites();
   const { cartItems } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const cartItemsCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -25,6 +31,12 @@ function Header() {
     }
 
     navigate(`/search?q=${encodeURIComponent(query)}`);
+  }
+
+  function handleLogout() {
+    logout();
+
+    navigate("/", { replace: true });
   }
 
   return (
@@ -69,18 +81,47 @@ function Header() {
             aria-label={`Warenkorb (${cartItemsCount})`}
           >
             🛒
+
             {cartItemsCount > 0 && (
-              <span className="header-action__count">{cartItemsCount}</span>
+              <span className="header-action__count">
+                {cartItemsCount}
+              </span>
             )}
           </Link>
 
-          <Link to="/seller/listings" className="header-login">
-            Verkaufen
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/seller/listings" className="header-login">
+                Verkaufen
+              </Link>
 
-          <Link to="/account" className="header-login">
-            Mein Bereich
-          </Link>
+              <Link to="/account" className="header-login">
+                {user?.name || "Mein Bereich"}
+              </Link>
+
+              <button
+                type="button"
+                className="header-login"
+                onClick={handleLogout}
+              >
+                Abmelden
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                state={{ from: location.pathname }}
+                className="header-login"
+              >
+                Anmelden
+              </Link>
+
+              <Link to="/register" className="header-login">
+                Konto erstellen
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
