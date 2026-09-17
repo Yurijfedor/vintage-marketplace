@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 import {
   FavoritesContext,
   type FavoritesContextValue,
 } from "./FavoritesContext";
+
+import { useAuth } from "../auth/useAuth";
 
 const FAVORITES_STORAGE_KEY = "favoriteProductIds";
 
@@ -13,6 +15,8 @@ interface FavoritesProviderProps {
 }
 
 export function FavoritesProvider({ children }: FavoritesProviderProps) {
+  const { isAuthenticated } = useAuth();
+
   const [favoriteProductIds, setFavoriteProductIds] = useState<string[]>(() => {
     const storedFavoriteIds = localStorage.getItem(FAVORITES_STORAGE_KEY);
 
@@ -22,6 +26,16 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
 
     return JSON.parse(storedFavoriteIds) as string[];
   });
+
+  const wasAuthenticated = useRef(isAuthenticated);
+
+  useEffect(() => {
+    if (wasAuthenticated.current && !isAuthenticated) {
+      setFavoriteProductIds([]);
+    }
+
+    wasAuthenticated.current = isAuthenticated;
+  }, [isAuthenticated]);
 
   useEffect(() => {
     localStorage.setItem(

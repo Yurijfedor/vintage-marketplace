@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+
+import { useAuth } from "../auth/useAuth";
 
 import {
   CartContext,
@@ -14,6 +16,8 @@ interface CartProviderProps {
 }
 
 export function CartProvider({ children }: CartProviderProps) {
+  const { isAuthenticated } = useAuth();
+
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = localStorage.getItem(CART_STORAGE_KEY);
 
@@ -23,6 +27,16 @@ export function CartProvider({ children }: CartProviderProps) {
 
     return JSON.parse(storedCartItems) as CartItem[];
   });
+
+  const wasAuthenticated = useRef(isAuthenticated);
+
+  useEffect(() => {
+    if (wasAuthenticated.current && !isAuthenticated) {
+      setCartItems([]);
+    }
+
+    wasAuthenticated.current = isAuthenticated;
+  }, [isAuthenticated]);
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
