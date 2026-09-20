@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   createProduct,
+  deleteProduct,
   getAllProducts,
   getProductById,
   updateProduct,
@@ -144,6 +145,20 @@ productsRouter.put("/:productId", (req, res) => {
   }
 
   res.json(product);
+});
+
+productsRouter.delete("/:productId", (req, res) => {
+  const deleted = deleteProduct(req.params.productId);
+
+  if (!deleted) {
+    res.status(404).json({
+      error: "Product not found",
+    });
+
+    return;
+  }
+
+  res.status(204).send();
 });
 
 productsRouter.post("/", (req, res) => {

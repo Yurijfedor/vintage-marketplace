@@ -133,6 +133,20 @@ export function updateProduct(
   return updatedProduct;
 }
 
+export function deleteProduct(productId: string): boolean {
+  const productIndex = products.findIndex(
+    (product) => product.id === productId,
+  );
+
+  if (productIndex === -1) {
+    return false;
+  }
+
+  products.splice(productIndex, 1);
+
+  return true;
+}
+
 export function createProduct(input: CreateProductInput): Product {
   const product =
     input.listingType === "fixed-price"
