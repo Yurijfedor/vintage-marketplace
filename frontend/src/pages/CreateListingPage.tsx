@@ -52,8 +52,7 @@ function CreateListingPage() {
         setErrorMessage("Bitte geben Sie einen gültigen Preis ein.");
         return;
       }
-      const product: FixedPriceProduct = {
-        id: crypto.randomUUID(),
+      const product: Omit<FixedPriceProduct, "id" | "createdAt"> = {
         title: trimmedTitle,
         category,
         condition,
@@ -61,10 +60,17 @@ function CreateListingPage() {
         price: numericPrice,
         imageUrl: trimmedImageUrl,
         sellerName: CURRENT_SELLER_NAME,
-        createdAt: new Date().toISOString(),
       };
-      addProduct(product);
-      navigate("/seller/listings");
+
+      addProduct(product)
+        .then(() => {
+          navigate("/seller/listings");
+        })
+        .catch((error) => {
+          console.error("Failed to create product:", error);
+          setErrorMessage("Der Artikel konnte nicht erstellt werden.");
+        });
+
       return;
     }
     const numericStartingPrice = Number(startingPrice);
@@ -88,8 +94,7 @@ function CreateListingPage() {
       setErrorMessage("Das Auktionsende muss in der Zukunft liegen.");
       return;
     }
-    const product: AuctionProduct = {
-      id: crypto.randomUUID(),
+    const product: Omit<AuctionProduct, "id" | "createdAt"> = {
       title: trimmedTitle,
       category,
       condition,
@@ -100,10 +105,16 @@ function CreateListingPage() {
       auctionEndsAt: auctionEndDate.toISOString(),
       imageUrl: trimmedImageUrl,
       sellerName: CURRENT_SELLER_NAME,
-      createdAt: new Date().toISOString(),
     };
-    addProduct(product);
-    navigate("/seller/listings");
+
+    addProduct(product)
+      .then(() => {
+        navigate("/seller/listings");
+      })
+      .catch((error) => {
+        console.error("Failed to create product:", error);
+        setErrorMessage("Der Artikel konnte nicht erstellt werden.");
+      });
   }
   return (
     <section className="checkout-page">

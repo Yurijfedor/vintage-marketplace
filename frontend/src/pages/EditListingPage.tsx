@@ -28,7 +28,7 @@ function EditListingPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
 
-  const { products, updateProduct } = useProducts();
+  const { products, updateProduct, removeProduct } = useProducts();
 
   const product = products.find((item) => item.id === productId);
 
@@ -196,6 +196,24 @@ function EditListingPage() {
     navigate("/seller/listings");
   }
 
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      "Möchten Sie diesen Artikel wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await removeProduct(currentProduct.id);
+      navigate("/seller/listings");
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+      setErrorMessage("Der Artikel konnte nicht gelöscht werden.");
+    }
+  }
+
   return (
     <section className="checkout-page">
       <div className="checkout-page__header">
@@ -337,6 +355,14 @@ function EditListingPage() {
             <Link to="/seller/listings" className="empty-state__button">
               Abbrechen
             </Link>
+
+            <button
+              type="button"
+              className="seller-listing__delete"
+              onClick={handleDelete}
+            >
+              Artikel löschen
+            </button>
           </div>
         </div>
       </form>
