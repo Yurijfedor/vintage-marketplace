@@ -88,6 +88,51 @@ export function getProductById(productId: string): Product | undefined {
   return products.find((product) => product.id === productId);
 }
 
+export function updateProduct(
+  productId: string,
+  input: CreateProductInput,
+): Product | undefined {
+  const productIndex = products.findIndex(
+    (product) => product.id === productId,
+  );
+
+  if (productIndex === -1) {
+    return undefined;
+  }
+
+  const updatedProduct =
+    input.listingType === "fixed-price"
+      ? {
+          id: productId,
+          title: input.title,
+          category: input.category,
+          condition: input.condition,
+          listingType: "fixed-price" as const,
+          price: input.price,
+          imageUrl: input.imageUrl,
+          sellerName: input.sellerName,
+          createdAt: products[productIndex].createdAt,
+        }
+      : {
+          id: productId,
+          title: input.title,
+          category: input.category,
+          condition: input.condition,
+          listingType: "auction" as const,
+          startingPrice: input.startingPrice,
+          currentBid: input.currentBid ?? null,
+          bidCount: input.bidCount ?? 0,
+          auctionEndsAt: input.auctionEndsAt,
+          imageUrl: input.imageUrl,
+          sellerName: input.sellerName,
+          createdAt: products[productIndex].createdAt,
+        };
+
+  products[productIndex] = updatedProduct;
+
+  return updatedProduct;
+}
+
 export function createProduct(input: CreateProductInput): Product {
   const product =
     input.listingType === "fixed-price"
