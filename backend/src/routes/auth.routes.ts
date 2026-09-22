@@ -3,6 +3,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { createUser, getUserByEmail } from "../repositories/user.repository.js";
+import {
+  authMiddleware,
+  type AuthenticatedRequest,
+} from "../middleware/auth.middleware.js";
 
 const authRouter = Router();
 
@@ -124,6 +128,13 @@ authRouter.post("/login", async (req, res) => {
       email: user.email,
       role: user.role,
     },
+  });
+});
+
+authRouter.get("/me", authMiddleware, (req: AuthenticatedRequest, res) => {
+  res.json({
+    userId: req.user!.userId,
+    role: req.user!.role,
   });
 });
 
