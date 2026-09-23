@@ -2,7 +2,11 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import { createUser, getUserByEmail } from "../repositories/user.repository.js";
+import {
+  createUser,
+  getUserByEmail,
+  getUserById,
+} from "../repositories/user.repository.js";
 import {
   authMiddleware,
   type AuthenticatedRequest,
@@ -132,9 +136,21 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.get("/me", authMiddleware, (req: AuthenticatedRequest, res) => {
+  const user = getUserById(req.user!.userId);
+
+  if (!user) {
+    res.status(401).json({
+      message: "User not found",
+    });
+
+    return;
+  }
+
   res.json({
-    userId: req.user!.userId,
-    role: req.user!.role,
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
   });
 });
 
