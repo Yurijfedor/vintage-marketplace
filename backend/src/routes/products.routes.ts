@@ -8,6 +8,11 @@ import {
   updateProduct,
 } from "../repositories/product.repository.js";
 
+import { authMiddleware } from "../middleware/auth.middleware.js";
+import { sellerMiddleware } from "../middleware/seller.middleware.js";
+
+import { getUserById } from "../repositories/user.repository.js";
+
 import type { ProductCondition } from "../types/product.js";
 
 const PRODUCT_CONDITIONS: ProductCondition[] = [
@@ -46,8 +51,7 @@ productsRouter.get("/:productId", (req, res) => {
 });
 
 productsRouter.put("/:productId", (req, res) => {
-  const { title, category, condition, imageUrl, sellerName, listingType } =
-    req.body;
+  const { title, category, condition, imageUrl, listingType } = req.body;
 
   const { productId } = req.params;
 
@@ -59,8 +63,6 @@ productsRouter.put("/:productId", (req, res) => {
     !isProductCondition(condition) ||
     typeof imageUrl !== "string" ||
     !imageUrl.trim() ||
-    typeof sellerName !== "string" ||
-    !sellerName.trim() ||
     (listingType !== "fixed-price" && listingType !== "auction")
   ) {
     res.status(400).json({
@@ -71,9 +73,14 @@ productsRouter.put("/:productId", (req, res) => {
   }
 
   if (listingType === "fixed-price") {
-    const { price } = req.body;
+    const { price, sellerName } = req.body;
 
-    if (typeof price !== "number" || price < 0) {
+    if (
+      typeof sellerName !== "string" ||
+      !sellerName.trim() ||
+      typeof price !== "number" ||
+      price < 0
+    ) {
       res.status(400).json({
         error: "Invalid fixed-price product data",
       });
@@ -104,9 +111,12 @@ productsRouter.put("/:productId", (req, res) => {
     return;
   }
 
-  const { startingPrice, currentBid, bidCount, auctionEndsAt } = req.body;
+  const { sellerName, startingPrice, currentBid, bidCount, auctionEndsAt } =
+    req.body;
 
   if (
+    typeof sellerName !== "string" ||
+    !sellerName.trim() ||
     typeof startingPrice !== "number" ||
     startingPrice < 0 ||
     (currentBid !== undefined &&
@@ -161,9 +171,18 @@ productsRouter.delete("/:productId", (req, res) => {
   res.status(204).send();
 });
 
-productsRouter.post("/", (req, res) => {
-  const { title, category, condition, imageUrl, sellerName, listingType } =
-    req.body;
+productsRouter.post("/", authMiddleware, sellerMiddleware, (req, res) => {
+  const { title, category, condition, imageUrl, listingType } = req.body;
+
+  const user = getUserById(req.user!.userId);
+
+  if (!user) {
+    res.status(401).json({
+      error: "User not found",
+    });
+
+    return;
+  }
 
   if (
     typeof title !== "string" ||
@@ -173,8 +192,6 @@ productsRouter.post("/", (req, res) => {
     !isProductCondition(condition) ||
     typeof imageUrl !== "string" ||
     !imageUrl.trim() ||
-    typeof sellerName !== "string" ||
-    !sellerName.trim() ||
     (listingType !== "fixed-price" && listingType !== "auction")
   ) {
     res.status(400).json({
@@ -200,7 +217,8 @@ productsRouter.post("/", (req, res) => {
       category: category.trim(),
       condition,
       imageUrl: imageUrl.trim(),
-      sellerName: sellerName.trim(),
+      sellerId: user.id,
+      sellerName: user.name,
       listingType,
       price,
     });
@@ -234,7 +252,8 @@ productsRouter.post("/", (req, res) => {
     category: category.trim(),
     condition,
     imageUrl: imageUrl.trim(),
-    sellerName: sellerName.trim(),
+    sellerId: user.id,
+    sellerName: user.name,
     listingType,
     startingPrice,
     currentBid: currentBid ?? null,

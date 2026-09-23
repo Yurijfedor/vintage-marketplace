@@ -13,6 +13,7 @@ export interface BaseProduct {
   category: string;
   condition: ProductCondition;
   imageUrl: string;
+  sellerId: string;
   sellerName: string;
   createdAt: string;
 }
