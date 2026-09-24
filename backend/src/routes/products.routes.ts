@@ -50,39 +50,99 @@ productsRouter.get("/:productId", (req, res) => {
   res.json(product);
 });
 
-productsRouter.put("/:productId", (req, res) => {
-  const { title, category, condition, imageUrl, listingType } = req.body;
+productsRouter.put(
+  "/:productId",
+  authMiddleware,
+  sellerMiddleware,
+  (req, res) => {
+    const { title, category, condition, imageUrl, listingType } = req.body;
 
-  const { productId } = req.params;
+    const productId = req.params.productId;
 
-  if (
-    typeof title !== "string" ||
-    !title.trim() ||
-    typeof category !== "string" ||
-    !category.trim() ||
-    !isProductCondition(condition) ||
-    typeof imageUrl !== "string" ||
-    !imageUrl.trim() ||
-    (listingType !== "fixed-price" && listingType !== "auction")
-  ) {
-    res.status(400).json({
-      error: "Invalid product data",
-    });
+    if (typeof productId !== "string") {
+      res.status(400).json({
+        error: "Invalid product ID",
+      });
 
-    return;
-  }
+      return;
+    }
 
-  if (listingType === "fixed-price") {
-    const { price, sellerName } = req.body;
+    const existingProduct = getProductById(productId);
+
+    if (!existingProduct) {
+      res.status(404).json({
+        error: "Product not found",
+      });
+
+      return;
+    }
+
+    if (existingProduct.sellerId !== req.user!.userId) {
+      res.status(403).json({
+        error: "You can only modify your own products",
+      });
+
+      return;
+    }
 
     if (
-      typeof sellerName !== "string" ||
-      !sellerName.trim() ||
-      typeof price !== "number" ||
-      price < 0
+      typeof title !== "string" ||
+      !title.trim() ||
+      typeof category !== "string" ||
+      !category.trim() ||
+      !isProductCondition(condition) ||
+      typeof imageUrl !== "string" ||
+      !imageUrl.trim() ||
+      (listingType !== "fixed-price" && listingType !== "auction")
     ) {
       res.status(400).json({
-        error: "Invalid fixed-price product data",
+        error: "Invalid product data",
+      });
+
+      return;
+    }
+
+    if (listingType === "fixed-price") {
+      const { price } = req.body;
+
+      if (typeof price !== "number" || price < 0) {
+        res.status(400).json({
+          error: "Invalid fixed-price product data",
+        });
+
+        return;
+      }
+
+      const product = updateProduct(productId, {
+        title: title.trim(),
+        category: category.trim(),
+        condition,
+        imageUrl: imageUrl.trim(),
+        sellerName: existingProduct.sellerName,
+        listingType,
+        price,
+      });
+
+      res.json(product);
+
+      return;
+    }
+
+    const { startingPrice, currentBid, bidCount, auctionEndsAt } = req.body;
+
+    if (
+      typeof startingPrice !== "number" ||
+      startingPrice < 0 ||
+      (currentBid !== undefined &&
+        currentBid !== null &&
+        typeof currentBid !== "number") ||
+      (bidCount !== undefined &&
+        (!Number.isInteger(bidCount) || bidCount < 0)) ||
+      typeof auctionEndsAt !== "string" ||
+      !auctionEndsAt.trim()
+    ) {
+      res.status(400).json({
+        error: "Invalid auction product data",
       });
 
       return;
@@ -93,12 +153,36 @@ productsRouter.put("/:productId", (req, res) => {
       category: category.trim(),
       condition,
       imageUrl: imageUrl.trim(),
-      sellerName: sellerName.trim(),
+      sellerName: existingProduct.sellerName,
       listingType,
-      price,
+      startingPrice,
+      currentBid: currentBid ?? null,
+      bidCount: bidCount ?? 0,
+      auctionEndsAt: auctionEndsAt.trim(),
     });
 
-    if (!product) {
+    res.json(product);
+  },
+);
+
+productsRouter.delete(
+  "/:productId",
+  authMiddleware,
+  sellerMiddleware,
+  (req, res) => {
+    const productId = req.params.productId;
+
+    if (typeof productId !== "string") {
+      res.status(400).json({
+        error: "Invalid product ID",
+      });
+
+      return;
+    }
+
+    const existingProduct = getProductById(productId);
+
+    if (!existingProduct) {
       res.status(404).json({
         error: "Product not found",
       });
@@ -106,70 +190,19 @@ productsRouter.put("/:productId", (req, res) => {
       return;
     }
 
-    res.json(product);
+    if (existingProduct.sellerId !== req.user!.userId) {
+      res.status(403).json({
+        error: "You can only delete your own products",
+      });
 
-    return;
-  }
+      return;
+    }
 
-  const { sellerName, startingPrice, currentBid, bidCount, auctionEndsAt } =
-    req.body;
+    deleteProduct(productId);
 
-  if (
-    typeof sellerName !== "string" ||
-    !sellerName.trim() ||
-    typeof startingPrice !== "number" ||
-    startingPrice < 0 ||
-    (currentBid !== undefined &&
-      currentBid !== null &&
-      typeof currentBid !== "number") ||
-    (bidCount !== undefined && (!Number.isInteger(bidCount) || bidCount < 0)) ||
-    typeof auctionEndsAt !== "string" ||
-    !auctionEndsAt.trim()
-  ) {
-    res.status(400).json({
-      error: "Invalid auction product data",
-    });
-
-    return;
-  }
-
-  const product = updateProduct(productId, {
-    title: title.trim(),
-    category: category.trim(),
-    condition,
-    imageUrl: imageUrl.trim(),
-    sellerName: sellerName.trim(),
-    listingType,
-    startingPrice,
-    currentBid: currentBid ?? null,
-    bidCount: bidCount ?? 0,
-    auctionEndsAt: auctionEndsAt.trim(),
-  });
-
-  if (!product) {
-    res.status(404).json({
-      error: "Product not found",
-    });
-
-    return;
-  }
-
-  res.json(product);
-});
-
-productsRouter.delete("/:productId", (req, res) => {
-  const deleted = deleteProduct(req.params.productId);
-
-  if (!deleted) {
-    res.status(404).json({
-      error: "Product not found",
-    });
-
-    return;
-  }
-
-  res.status(204).send();
-});
+    res.status(204).send();
+  },
+);
 
 productsRouter.post("/", authMiddleware, sellerMiddleware, (req, res) => {
   const { title, category, condition, imageUrl, listingType } = req.body;
