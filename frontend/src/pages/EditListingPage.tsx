@@ -3,8 +3,8 @@ import type { FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { categories } from "../features/products/categories";
+import { useAuth } from "../features/auth/useAuth";
 import { useProducts } from "../features/products/useProducts";
-import { CURRENT_SELLER_NAME } from "../features/seller/currentSeller";
 import {
   formatCondition,
   formatListingType,
@@ -28,6 +28,7 @@ function EditListingPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
 
+  const { user } = useAuth();
   const { products, updateProduct, removeProduct } = useProducts();
 
   const product = products.find((item) => item.id === productId);
@@ -74,7 +75,7 @@ function EditListingPage() {
     );
   }
 
-  if (product.sellerName !== CURRENT_SELLER_NAME) {
+  if (!user || product.sellerName !== user.name) {
     return (
       <section className="empty-state">
         <h1>Zugriff verweigert</h1>

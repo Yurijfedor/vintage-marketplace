@@ -3,50 +3,51 @@ import type { ReactNode } from "react";
 
 import type { User, UserRole } from "../../types/auth";
 
-import { authenticateUser, registerUser } from "./authStorage";
+import { registerUser } from "./authStorage";
+import { loginUserApi, getCurrentUserApi } from "./authApi";
+import {
+  getAuthToken,
+  removeAuthToken,
+  saveAuthToken,
+} from "./authTokenStorage";
 
 import { AuthContext, type AuthContextValue } from "./AuthContext";
-
-const AUTH_STORAGE_KEY = "currentUser";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem(AUTH_STORAGE_KEY);
-
-    if (!storedUser) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(storedUser) as User;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+    const token = getAuthToken();
+
+    if (!token) {
       return;
     }
 
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-  }, [user]);
+    getCurrentUserApi(token)
+      .then((currentUser) => {
+        setUser(currentUser);
+      })
+      .catch(() => {
+        removeAuthToken();
+        setUser(null);
+      });
+  }, []);
 
-  function login(email: string, password: string): boolean {
-    const authenticatedUser = authenticateUser(email, password);
+  async function login(email: string, password: string): Promise<boolean> {
+    try {
+      const response = await loginUserApi(email, password);
 
-    if (!authenticatedUser) {
+      saveAuthToken(response.token);
+      setUser(response.user);
+
+      return true;
+    } catch {
       return false;
     }
-
-    setUser(authenticatedUser);
-
-    return true;
   }
 
   function register(
@@ -67,6 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   function logout() {
+    removeAuthToken();
     setUser(null);
   }
 

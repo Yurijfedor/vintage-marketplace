@@ -3,13 +3,7 @@ import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { categories } from "../features/products/categories";
 import { useProducts } from "../features/products/useProducts";
-import { CURRENT_SELLER_NAME } from "../features/seller/currentSeller";
-import type {
-  AuctionProduct,
-  FixedPriceProduct,
-  ListingType,
-  ProductCondition,
-} from "../types/product";
+import type { ListingType, ProductCondition } from "../types/product";
 const productConditions: ProductCondition[] = [
   "new",
   "very-good",
@@ -52,14 +46,13 @@ function CreateListingPage() {
         setErrorMessage("Bitte geben Sie einen gültigen Preis ein.");
         return;
       }
-      const product: Omit<FixedPriceProduct, "id" | "createdAt"> = {
+      const product = {
         title: trimmedTitle,
         category,
         condition,
-        listingType: "fixed-price",
+        listingType: "fixed-price" as const,
         price: numericPrice,
         imageUrl: trimmedImageUrl,
-        sellerName: CURRENT_SELLER_NAME,
       };
 
       addProduct(product)
@@ -94,17 +87,16 @@ function CreateListingPage() {
       setErrorMessage("Das Auktionsende muss in der Zukunft liegen.");
       return;
     }
-    const product: Omit<AuctionProduct, "id" | "createdAt"> = {
+    const product = {
       title: trimmedTitle,
       category,
       condition,
-      listingType: "auction",
+      listingType: "auction" as const,
       startingPrice: numericStartingPrice,
       currentBid: null,
       bidCount: 0,
       auctionEndsAt: auctionEndDate.toISOString(),
       imageUrl: trimmedImageUrl,
-      sellerName: CURRENT_SELLER_NAME,
     };
 
     addProduct(product)

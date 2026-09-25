@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
 
-import { CURRENT_SELLER_NAME } from "../features/seller/currentSeller";
+import { useAuth } from "../features/auth/useAuth";
 import { useProducts } from "../features/products/useProducts";
 
 import "../styles/account.css";
 
 function AccountPage() {
+  const { user } = useAuth();
   const { products } = useProducts();
 
-  const sellerProducts = products.filter(
-    (product) => product.sellerName === CURRENT_SELLER_NAME,
-  );
+  const sellerProducts = user
+    ? products.filter((product) => product.sellerName === user.name)
+    : [];
 
   return (
     <section className="catalog-page">

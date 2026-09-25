@@ -4,11 +4,23 @@ import type {
   Product,
 } from "../types/product";
 
+import { getAuthToken } from "../features/auth/authTokenStorage";
+
 const API_BASE_URL = "http://localhost:3000/api";
 
 export type CreateProductInput =
-  | Omit<FixedPriceProduct, "id" | "createdAt">
-  | Omit<AuctionProduct, "id" | "createdAt">;
+  | Omit<FixedPriceProduct, "id" | "createdAt" | "sellerId" | "sellerName">
+  | Omit<AuctionProduct, "id" | "createdAt" | "sellerId" | "sellerName">;
+
+function getAuthHeaders(): Record<string, string> {
+  const token = getAuthToken();
+
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+}
 
 export async function getProducts(): Promise<Product[]> {
   const response = await fetch(`${API_BASE_URL}/products`);
@@ -37,6 +49,7 @@ export async function createProduct(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(product),
   });
@@ -53,6 +66,7 @@ export async function updateProduct(product: Product): Promise<Product> {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(product),
   });
@@ -67,6 +81,9 @@ export async function updateProduct(product: Product): Promise<Product> {
 export async function deleteProduct(productId: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
     method: "DELETE",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (!response.ok) {
