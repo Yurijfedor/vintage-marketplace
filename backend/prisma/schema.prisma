@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  buyer
+  seller
+}
+
+enum ProductCondition {
+  new
+  very_good
+  good
+  used
+  damaged
+}
+
+enum ListingType {
+  fixed_price
+  auction
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  createdAt    DateTime @default(now())
+
+  products Product[]
+}
+
+model Product {
+  id            String          @id @default(uuid())
+  title         String
+  category      String
+  condition     ProductCondition
+  listingType   ListingType
+  imageUrl      String
+
+  price         Decimal?
+  startingPrice Decimal?
+  currentBid    Decimal?
+  bidCount      Int             @default(0)
+  auctionEndsAt DateTime?
+
+  sellerId      String
+  seller        User            @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+
+  createdAt     DateTime        @default(now())
+
+  @@index([sellerId])
+  @@index([category])
+  @@index([listingType])
+  @@index([createdAt])
+}
