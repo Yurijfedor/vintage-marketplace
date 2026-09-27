@@ -50,7 +50,7 @@ authRouter.post("/register", async (req, res) => {
     return;
   }
 
-  const existingUser = getUserByEmail(normalizedEmail);
+  const existingUser = await getUserByEmail(normalizedEmail);
 
   if (existingUser) {
     res.status(409).json({
@@ -64,7 +64,7 @@ authRouter.post("/register", async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 12);
 
-  const user = createUser({
+  const user = await createUser({
     name: trimmedName,
     email: normalizedEmail,
     passwordHash,
@@ -93,7 +93,7 @@ authRouter.post("/login", async (req, res) => {
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  const user = getUserByEmail(normalizedEmail);
+  const user = await getUserByEmail(normalizedEmail);
 
   if (!user) {
     res.status(401).json({
@@ -135,23 +135,27 @@ authRouter.post("/login", async (req, res) => {
   });
 });
 
-authRouter.get("/me", authMiddleware, (req: AuthenticatedRequest, res) => {
-  const user = getUserById(req.user!.userId);
+authRouter.get(
+  "/me",
+  authMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const user = await getUserById(req.user!.userId);
 
-  if (!user) {
-    res.status(401).json({
-      message: "User not found",
+    if (!user) {
+      res.status(401).json({
+        message: "User not found",
+      });
+
+      return;
+    }
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
     });
-
-    return;
-  }
-
-  res.json({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-  });
-});
+  },
+);
 
 export default authRouter;

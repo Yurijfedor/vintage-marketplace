@@ -204,10 +204,10 @@ productsRouter.delete(
   },
 );
 
-productsRouter.post("/", authMiddleware, sellerMiddleware, (req, res) => {
+productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
   const { title, category, condition, imageUrl, listingType } = req.body;
 
-  const user = getUserById(req.user!.userId);
+  const user = await getUserById(req.user!.userId);
 
   if (!user) {
     res.status(401).json({
