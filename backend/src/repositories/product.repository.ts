@@ -1,4 +1,5 @@
 import type { Product } from "../types/product.js";
+import prisma from "../lib/prisma.js";
 
 type CreateProductInput =
   | {
@@ -48,168 +49,231 @@ type UpdateProductInput =
       auctionEndsAt: string;
     };
 
-const products: Product[] = [
-  {
-    id: "1",
-    title: "Alte Porzellanfigur",
-    category: "Porzellan",
-    condition: "good",
-    listingType: "fixed-price",
-    price: 29,
-    imageUrl:
-      "https://images.unsplash.com/photo-1577083288073-40892c0860a4?auto=format&fit=crop&w=800&q=80",
-    sellerId: "seed-seller-vintageshop",
-    sellerName: "VintageShop",
-    createdAt: "2026-08-20T10:30:00",
-  },
-  {
-    id: "2",
-    title: "Schallplatte – Klassische Musik",
-    category: "Schallplatten",
-    condition: "very-good",
-    listingType: "auction",
-    startingPrice: 10,
-    currentBid: 15,
-    bidCount: 4,
-    auctionEndsAt: "2026-08-29T20:00:00",
-    imageUrl:
-      "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?auto=format&fit=crop&w=800&q=80",
-    sellerId: "seed-seller-retrosound",
-    sellerName: "RetroSound",
-    createdAt: "2026-08-28T14:15:00",
-  },
-  {
-    id: "3",
-    title: "CD Sammlung – 90er Jahre",
-    category: "CDs",
-    condition: "good",
-    listingType: "fixed-price",
-    price: 8,
-    imageUrl:
-      "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?auto=format&fit=crop&w=800&q=80",
-    sellerId: "seed-seller-secondlife",
-    sellerName: "SecondLife",
-    createdAt: "2026-08-30T09:45:00",
-  },
-  {
-    id: "4",
-    title: "Vintage Dekoration",
-    category: "Dekoration",
-    condition: "used",
-    listingType: "auction",
-    startingPrice: 20,
-    currentBid: 35,
-    bidCount: 7,
-    auctionEndsAt: "2026-08-31T18:30:00",
-    imageUrl:
-      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
-    sellerId: "seed-seller-antikcorner",
-    sellerName: "AntikCorner",
-    createdAt: "2026-08-31T16:20:00",
-  },
-];
+function mapProduct(product: {
+  id: string;
+  title: string;
+  category: string;
+  condition:
+    | "new"
+    | "very_good"
+    | "good"
+    | "used"
+    | "damaged";
+  listingType: "fixed_price" | "auction";
+  imageUrl: string;
+  price: { toNumber(): number } | null;
+  startingPrice: { toNumber(): number } | null;
+  currentBid: { toNumber(): number } | null;
+  bidCount: number;
+  auctionEndsAt: Date | null;
+  sellerId: string;
+  createdAt: Date;
+  seller: {
+    name: string;
+  };
+}): Product {
+  const conditionMap = {
+    new: "new",
+    very_good: "very-good",
+    good: "good",
+    used: "used",
+    damaged: "damaged",
+  } as const;
 
-export function getAllProducts(): Product[] {
-  return products;
+  if (product.listingType === "fixed_price") {
+    return {
+      id: product.id,
+      title: product.title,
+      category: product.category,
+      condition: conditionMap[product.condition],
+      listingType: "fixed-price",
+      price: product.price!.toNumber(),
+      imageUrl: product.imageUrl,
+      sellerId: product.sellerId,
+      sellerName: product.seller.name,
+      createdAt: product.createdAt.toISOString(),
+    };
+  }
+
+  return {
+    id: product.id,
+    title: product.title,
+    category: product.category,
+    condition: conditionMap[product.condition],
+    listingType: "auction",
+    startingPrice: product.startingPrice!.toNumber(),
+    currentBid: product.currentBid?.toNumber() ?? null,
+    bidCount: product.bidCount,
+    auctionEndsAt: product.auctionEndsAt!.toISOString(),
+    imageUrl: product.imageUrl,
+    sellerId: product.sellerId,
+    sellerName: product.seller.name,
+    createdAt: product.createdAt.toISOString(),
+  };
 }
 
-export function getProductById(productId: string): Product | undefined {
-  return products.find((product) => product.id === productId);
+const productInclude = {
+  seller: {
+    select: {
+      name: true,
+    },
+  },
+} as const;
+
+export async function getAllProducts(): Promise<Product[]> {
+  const products = await prisma.product.findMany({
+    include: productInclude,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return products.map(mapProduct);
 }
 
-export function updateProduct(
+export async function getProductById(
+  productId: string,
+): Promise<Product | undefined> {
+  const product = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+    include: productInclude,
+  });
+
+  return product ? mapProduct(product) : undefined;
+}
+
+export async function updateProduct(
   productId: string,
   input: UpdateProductInput,
-): Product | undefined {
-  const productIndex = products.findIndex(
-    (product) => product.id === productId,
-  );
+): Promise<Product | undefined> {
+  const existingProduct = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
 
-  if (productIndex === -1) {
+  if (!existingProduct) {
     return undefined;
   }
 
-  const updatedProduct =
+  const product =
     input.listingType === "fixed-price"
-      ? {
-          id: productId,
-          title: input.title,
-          category: input.category,
-          condition: input.condition,
-          listingType: "fixed-price" as const,
-          price: input.price,
-          imageUrl: input.imageUrl,
-          sellerId: products[productIndex].sellerId,
-          sellerName: input.sellerName,
-          createdAt: products[productIndex].createdAt,
-        }
-      : {
-          id: productId,
-          title: input.title,
-          category: input.category,
-          condition: input.condition,
-          listingType: "auction" as const,
-          startingPrice: input.startingPrice,
-          currentBid: input.currentBid ?? null,
-          bidCount: input.bidCount ?? 0,
-          auctionEndsAt: input.auctionEndsAt,
-          imageUrl: input.imageUrl,
-          sellerId: products[productIndex].sellerId,
-          sellerName: input.sellerName,
-          createdAt: products[productIndex].createdAt,
-        };
+      ? await prisma.product.update({
+          where: {
+            id: productId,
+          },
+          data: {
+            title: input.title,
+            category: input.category,
+            condition: input.condition.replace(
+              "-",
+              "_",
+            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            listingType: "fixed_price",
+            price: input.price,
+            startingPrice: null,
+            currentBid: null,
+            bidCount: 0,
+            auctionEndsAt: null,
+            imageUrl: input.imageUrl,
+          },
+          include: productInclude,
+        })
+      : await prisma.product.update({
+          where: {
+            id: productId,
+          },
+          data: {
+            title: input.title,
+            category: input.category,
+            condition: input.condition.replace(
+              "-",
+              "_",
+            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            listingType: "auction",
+            price: null,
+            startingPrice: input.startingPrice,
+            currentBid: input.currentBid ?? null,
+            bidCount: input.bidCount ?? 0,
+            auctionEndsAt: new Date(input.auctionEndsAt),
+            imageUrl: input.imageUrl,
+          },
+          include: productInclude,
+        });
 
-  products[productIndex] = updatedProduct;
-
-  return updatedProduct;
+  return mapProduct(product);
 }
 
-export function deleteProduct(productId: string): boolean {
-  const productIndex = products.findIndex(
-    (product) => product.id === productId,
-  );
+export async function deleteProduct(
+  productId: string,
+): Promise<boolean> {
+  const existingProduct = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-  if (productIndex === -1) {
+  if (!existingProduct) {
     return false;
   }
 
-  products.splice(productIndex, 1);
+  await prisma.product.delete({
+    where: {
+      id: productId,
+    },
+  });
 
   return true;
 }
 
-export function createProduct(input: CreateProductInput): Product {
+export async function createProduct(
+  input: CreateProductInput,
+): Promise<Product> {
   const product =
     input.listingType === "fixed-price"
-      ? {
-          id: crypto.randomUUID(),
-          title: input.title,
-          category: input.category,
-          condition: input.condition,
-          listingType: "fixed-price" as const,
-          price: input.price,
-          imageUrl: input.imageUrl,
-          sellerId: input.sellerId,
-          sellerName: input.sellerName,
-          createdAt: new Date().toISOString(),
-        }
-      : {
-          id: crypto.randomUUID(),
-          title: input.title,
-          category: input.category,
-          condition: input.condition,
-          listingType: "auction" as const,
-          startingPrice: input.startingPrice,
-          currentBid: input.currentBid ?? null,
-          bidCount: input.bidCount ?? 0,
-          auctionEndsAt: input.auctionEndsAt,
-          imageUrl: input.imageUrl,
-          sellerId: input.sellerId,
-          sellerName: input.sellerName,
-          createdAt: new Date().toISOString(),
-        };
+      ? await prisma.product.create({
+          data: {
+            title: input.title,
+            category: input.category,
+            condition: input.condition.replace(
+              "-",
+              "_",
+            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            listingType: "fixed_price",
+            price: input.price,
+            startingPrice: null,
+            currentBid: null,
+            bidCount: 0,
+            auctionEndsAt: null,
+            imageUrl: input.imageUrl,
+            sellerId: input.sellerId,
+          },
+          include: productInclude,
+        })
+      : await prisma.product.create({
+          data: {
+            title: input.title,
+            category: input.category,
+            condition: input.condition.replace(
+              "-",
+              "_",
+            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            listingType: "auction",
+            price: null,
+            startingPrice: input.startingPrice,
+            currentBid: input.currentBid ?? null,
+            bidCount: input.bidCount ?? 0,
+            auctionEndsAt: new Date(input.auctionEndsAt),
+            imageUrl: input.imageUrl,
+            sellerId: input.sellerId,
+          },
+          include: productInclude,
+        });
 
-  products.push(product);
-
-  return product;
+  return mapProduct(product);
 }

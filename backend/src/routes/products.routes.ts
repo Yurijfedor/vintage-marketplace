@@ -32,12 +32,14 @@ function isProductCondition(value: unknown): value is ProductCondition {
 
 const productsRouter = Router();
 
-productsRouter.get("/", (_req, res) => {
-  res.json(getAllProducts());
+productsRouter.get("/", async (_req, res) => {
+  const products = await getAllProducts();
+
+  res.json(products);
 });
 
-productsRouter.get("/:productId", (req, res) => {
-  const product = getProductById(req.params.productId);
+productsRouter.get("/:productId", async (req, res) => {
+  const product = await getProductById(req.params.productId);
 
   if (!product) {
     res.status(404).json({
@@ -54,7 +56,7 @@ productsRouter.put(
   "/:productId",
   authMiddleware,
   sellerMiddleware,
-  (req, res) => {
+  async (req, res) => {
     const { title, category, condition, imageUrl, listingType } = req.body;
 
     const productId = req.params.productId;
@@ -67,7 +69,7 @@ productsRouter.put(
       return;
     }
 
-    const existingProduct = getProductById(productId);
+    const existingProduct = await getProductById(productId);
 
     if (!existingProduct) {
       res.status(404).json({
@@ -113,7 +115,7 @@ productsRouter.put(
         return;
       }
 
-      const product = updateProduct(productId, {
+      const product = await updateProduct(productId, {
         title: title.trim(),
         category: category.trim(),
         condition,
@@ -148,7 +150,7 @@ productsRouter.put(
       return;
     }
 
-    const product = updateProduct(productId, {
+    const product = await updateProduct(productId, {
       title: title.trim(),
       category: category.trim(),
       condition,
@@ -169,7 +171,7 @@ productsRouter.delete(
   "/:productId",
   authMiddleware,
   sellerMiddleware,
-  (req, res) => {
+  async (req, res) => {
     const productId = req.params.productId;
 
     if (typeof productId !== "string") {
@@ -180,7 +182,7 @@ productsRouter.delete(
       return;
     }
 
-    const existingProduct = getProductById(productId);
+    const existingProduct = await getProductById(productId);
 
     if (!existingProduct) {
       res.status(404).json({
@@ -198,7 +200,7 @@ productsRouter.delete(
       return;
     }
 
-    deleteProduct(productId);
+    await deleteProduct(productId);
 
     res.status(204).send();
   },
@@ -245,7 +247,7 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
       return;
     }
 
-    const product = createProduct({
+    const product = await createProduct({
       title: title.trim(),
       category: category.trim(),
       condition,
@@ -280,7 +282,7 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
     return;
   }
 
-  const product = createProduct({
+  const product = await createProduct({
     title: title.trim(),
     category: category.trim(),
     condition,
