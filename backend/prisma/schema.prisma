@@ -34,29 +34,47 @@ model User {
   createdAt    DateTime @default(now())
 
   products Product[]
+  bids     Bid[]
 }
 
 model Product {
-  id            String          @id @default(uuid())
-  title         String
-  category      String
-  condition     ProductCondition
-  listingType   ListingType
-  imageUrl      String
+  id          String           @id @default(uuid())
+  title       String
+  category    String
+  condition   ProductCondition
+  listingType ListingType
+  imageUrl    String
 
   price         Decimal?
   startingPrice Decimal?
   currentBid    Decimal?
-  bidCount      Int             @default(0)
+  bidCount      Int       @default(0)
   auctionEndsAt DateTime?
 
-  sellerId      String
-  seller        User            @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  sellerId String
+  seller   User   @relation(fields: [sellerId], references: [id], onDelete: Restrict)
 
-  createdAt     DateTime        @default(now())
+  bids Bid[]
+
+  createdAt DateTime @default(now())
 
   @@index([sellerId])
   @@index([category])
   @@index([listingType])
   @@index([createdAt])
+}
+
+model Bid {
+  id        String   @id @default(uuid())
+  amount    Decimal
+  createdAt DateTime @default(now())
+
+  bidderId String
+  bidder   User   @relation(fields: [bidderId], references: [id], onDelete: Restrict)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+  @@index([bidderId])
 }
