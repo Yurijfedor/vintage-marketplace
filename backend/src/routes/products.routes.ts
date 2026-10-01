@@ -12,6 +12,7 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 import { sellerMiddleware } from "../middleware/seller.middleware.js";
 
 import { getUserById } from "../repositories/user.repository.js";
+import { createBid } from "../repositories/bid.repository.js";
 
 import type { ProductCondition } from "../types/product.js";
 
@@ -50,6 +51,52 @@ productsRouter.get("/:productId", async (req, res) => {
   }
 
   res.json(product);
+});
+
+productsRouter.post("/:productId/bids", authMiddleware, async (req, res) => {
+  const productId = req.params.productId;
+
+  if (typeof productId !== "string") {
+    res.status(400).json({ error: "Invalid product ID" });
+    return;
+  }
+
+  const { amount } = req.body;
+
+  if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
+    res.status(400).json({ error: "Invalid bid amount" });
+    return;
+  }
+
+  try {
+    const bid = await createBid({
+      productId,
+      bidderId: req.user!.userId,
+      amount,
+    });
+
+    res.status(201).json(bid);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "Product not found") {
+        res.status(404).json({ error: error.message });
+        return;
+      }
+
+      if (
+        error.message === "Product is not an auction" ||
+        error.message === "Auction end date is not configured" ||
+        error.message === "Auction has ended" ||
+        error.message.startsWith("Bid must be at least")
+      ) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+    }
+
+    console.error("Failed to create bid:", error);
+    res.status(500).json({ error: "Failed to create bid" });
+  }
 });
 
 productsRouter.put(
