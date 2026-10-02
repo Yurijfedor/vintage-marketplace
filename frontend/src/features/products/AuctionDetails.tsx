@@ -1,9 +1,9 @@
 import { useState } from "react";
-
 import BidForm from "./BidForm";
 import Countdown from "./Countdown";
 import { useCountdown } from "./useCountdown";
 import { formatPrice } from "./productFormatters";
+import { createBid } from "../../api/bidsApi";
 import type { AuctionProduct } from "../../types/product";
 
 interface AuctionDetailsProps {
@@ -14,13 +14,14 @@ function AuctionDetails({ product }: AuctionDetailsProps) {
   const initialBid = product.currentBid ?? product.startingPrice;
 
   const [currentBid, setCurrentBid] = useState(initialBid);
-
   const [bidCount, setBidCount] = useState(product.bidCount);
 
   const countdown = useCountdown(product.auctionEndsAt);
 
-  function handleBidSubmit(amount: number) {
-    setCurrentBid(amount);
+  async function handleBidSubmit(amount: number) {
+    const bid = await createBid(product.id, amount);
+
+    setCurrentBid(bid.amount);
     setBidCount((count) => count + 1);
   }
 

@@ -4,7 +4,7 @@ import { getMinimumBid, isValidBid } from "./auctionRules";
 
 interface BidFormProps {
   currentBid: number;
-  onBidSubmit: (amount: number) => void;
+  onBidSubmit: (amount: number) => Promise<void>;
   isAuctionActive: boolean;
 }
 
@@ -12,19 +12,23 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isAuctionActive) {
     return (
       <div className="bid-form bid-form--ended">
         <h3>Auktion beendet</h3>
-
         <p>Für diese Auktion können keine Gebote mehr abgegeben werden.</p>
       </div>
     );
   }
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     setError("");
     setSuccess("");
@@ -53,10 +57,22 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
       return;
     }
 
-    onBidSubmit(numericAmount);
+    setIsSubmitting(true);
 
-    setAmount("");
-    setSuccess("Ihr Gebot wurde erfolgreich abgegeben.");
+    try {
+      await onBidSubmit(numericAmount);
+
+      setAmount("");
+      setSuccess("Ihr Gebot wurde erfolgreich abgegeben.");
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Beim Abgeben des Gebots ist ein Fehler aufgetreten.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -74,9 +90,12 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
               .toFixed(2)
               .replace(".", ",")} €`}
             aria-label="Ihr Gebot"
+            disabled={isSubmitting}
           />
 
-          <button type="submit">Gebot abgeben</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Wird abgegeben..." : "Gebot abgeben"}
+          </button>
         </div>
 
         {error && (

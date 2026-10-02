@@ -44,8 +44,6 @@ type UpdateProductInput =
       sellerName: string;
       listingType: "auction";
       startingPrice: number;
-      currentBid?: number | null;
-      bidCount?: number;
       auctionEndsAt: string;
     };
 
@@ -53,12 +51,7 @@ function mapProduct(product: {
   id: string;
   title: string;
   category: string;
-  condition:
-    | "new"
-    | "very_good"
-    | "good"
-    | "used"
-    | "damaged";
+  condition: "new" | "very_good" | "good" | "used" | "damaged";
   listingType: "fixed_price" | "auction";
   imageUrl: string;
   price: { toNumber(): number } | null;
@@ -167,10 +160,12 @@ export async function updateProduct(
           data: {
             title: input.title,
             category: input.category,
-            condition: input.condition.replace(
-              "-",
-              "_",
-            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            condition: input.condition.replace("-", "_") as
+              | "new"
+              | "very_good"
+              | "good"
+              | "used"
+              | "damaged",
             listingType: "fixed_price",
             price: input.price,
             startingPrice: null,
@@ -188,15 +183,15 @@ export async function updateProduct(
           data: {
             title: input.title,
             category: input.category,
-            condition: input.condition.replace(
-              "-",
-              "_",
-            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            condition: input.condition.replace("-", "_") as
+              | "new"
+              | "very_good"
+              | "good"
+              | "used"
+              | "damaged",
             listingType: "auction",
             price: null,
             startingPrice: input.startingPrice,
-            currentBid: input.currentBid ?? null,
-            bidCount: input.bidCount ?? 0,
             auctionEndsAt: new Date(input.auctionEndsAt),
             imageUrl: input.imageUrl,
           },
@@ -206,9 +201,7 @@ export async function updateProduct(
   return mapProduct(product);
 }
 
-export async function deleteProduct(
-  productId: string,
-): Promise<boolean> {
+export async function deleteProduct(productId: string): Promise<boolean> {
   const existingProduct = await prisma.product.findUnique({
     where: {
       id: productId,
@@ -240,10 +233,12 @@ export async function createProduct(
           data: {
             title: input.title,
             category: input.category,
-            condition: input.condition.replace(
-              "-",
-              "_",
-            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            condition: input.condition.replace("-", "_") as
+              | "new"
+              | "very_good"
+              | "good"
+              | "used"
+              | "damaged",
             listingType: "fixed_price",
             price: input.price,
             startingPrice: null,
@@ -259,10 +254,12 @@ export async function createProduct(
           data: {
             title: input.title,
             category: input.category,
-            condition: input.condition.replace(
-              "-",
-              "_",
-            ) as "new" | "very_good" | "good" | "used" | "damaged",
+            condition: input.condition.replace("-", "_") as
+              | "new"
+              | "very_good"
+              | "good"
+              | "used"
+              | "damaged",
             listingType: "auction",
             price: null,
             startingPrice: input.startingPrice,

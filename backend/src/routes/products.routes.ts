@@ -205,8 +205,6 @@ productsRouter.put(
       sellerName: existingProduct.sellerName,
       listingType,
       startingPrice,
-      currentBid: currentBid ?? null,
-      bidCount: bidCount ?? 0,
       auctionEndsAt: auctionEndsAt.trim(),
     });
 

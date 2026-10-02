@@ -62,13 +62,35 @@ export async function createProduct(
 }
 
 export async function updateProduct(product: Product): Promise<Product> {
+  const payload =
+    product.listingType === "fixed-price"
+      ? {
+          title: product.title,
+          category: product.category,
+          condition: product.condition,
+          imageUrl: product.imageUrl,
+          sellerName: product.sellerName,
+          listingType: "fixed-price" as const,
+          price: product.price,
+        }
+      : {
+          title: product.title,
+          category: product.category,
+          condition: product.condition,
+          imageUrl: product.imageUrl,
+          sellerName: product.sellerName,
+          listingType: "auction" as const,
+          startingPrice: product.startingPrice,
+          auctionEndsAt: product.auctionEndsAt,
+        };
+
   const response = await fetch(`${API_BASE_URL}/products/${product.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify(product),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
