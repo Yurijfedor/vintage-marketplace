@@ -1,6 +1,5 @@
+import API_BASE_URL from "./apiConfig";
 import { getAuthToken } from "../features/auth/authTokenStorage";
-
-const API_BASE_URL = "http://localhost:3000/api";
 
 function getAuthHeaders(): Record<string, string> {
   const token = getAuthToken();

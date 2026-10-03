@@ -1,6 +1,6 @@
 import type { User, UserRole } from "../../types/auth";
 
-const API_BASE_URL = "http://localhost:3000/api";
+import API_BASE_URL from "../../api/apiConfig";
 
 interface LoginResponse {
   token: string;
