@@ -2,6 +2,8 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+import { JWT_SECRET } from "../config/env.js";
+
 import {
   createUser,
   getUserByEmail,
@@ -13,8 +15,6 @@ import {
 } from "../middleware/auth.middleware.js";
 
 const authRouter = Router();
-
-const JWT_SECRET = process.env.JWT_SECRET || "development-secret";
 
 authRouter.post("/register", async (req, res) => {
   const { name, email, password, role } = req.body;
