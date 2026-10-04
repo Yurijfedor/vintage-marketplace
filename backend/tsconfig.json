@@ -13,6 +13,8 @@
 
     "skipLibCheck": true,
 
+    "types": ["node"],
+
     "sourceMap": true
   },
   "include": ["src/**/*.ts"],
