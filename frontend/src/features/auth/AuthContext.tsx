@@ -14,7 +14,7 @@ export interface AuthContextValue {
     email: string,
     password: string,
     role: UserRole,
-  ) => boolean;
+  ) => Promise<boolean>;
 
   logout: () => void;
 }

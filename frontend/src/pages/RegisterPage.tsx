@@ -18,7 +18,7 @@ function RegisterPage() {
   const [role, setRole] = useState<"buyer" | "seller">("buyer");
   const [errorMessage, setErrorMessage] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setErrorMessage("");
@@ -41,7 +41,12 @@ function RegisterPage() {
       return;
     }
 
-    const success = register(trimmedName, normalizedEmail, password, role);
+    const success = await register(
+      trimmedName,
+      normalizedEmail,
+      password,
+      role,
+    );
 
     if (!success) {
       setErrorMessage("Für diese E-Mail-Adresse existiert bereits ein Konto.");

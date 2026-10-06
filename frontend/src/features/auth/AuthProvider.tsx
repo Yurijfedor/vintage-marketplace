@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 
 import type { User, UserRole } from "../../types/auth";
 
-import { registerUser } from "./authStorage";
-import { loginUserApi, getCurrentUserApi } from "./authApi";
+import { registerUserApi, loginUserApi, getCurrentUserApi } from "./authApi";
 import {
   getAuthToken,
   removeAuthToken,
@@ -50,21 +49,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  function register(
+  async function register(
     name: string,
     email: string,
     password: string,
     role: UserRole,
-  ): boolean {
-    const registeredUser = registerUser(name, email, password, role);
+  ): Promise<boolean> {
+    try {
+      await registerUserApi(name, email, password, role);
 
-    if (!registeredUser) {
+      const response = await loginUserApi(email, password);
+
+      saveAuthToken(response.token);
+      setUser(response.user);
+
+      return true;
+    } catch {
       return false;
     }
-
-    setUser(registeredUser);
-
-    return true;
   }
 
   function logout() {
