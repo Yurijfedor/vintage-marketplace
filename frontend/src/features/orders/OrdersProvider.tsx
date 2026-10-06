@@ -3,27 +3,42 @@ import type { ReactNode } from "react";
 
 import { OrdersContext, type OrdersContextValue } from "./OrdersContext";
 import type { Order } from "../../types/order";
-
-const ORDERS_STORAGE_KEY = "orders";
+import { useAuth } from "../auth/useAuth";
 
 interface OrdersProviderProps {
   children: ReactNode;
 }
 
-export function OrdersProvider({ children }: OrdersProviderProps) {
+function getOrdersStorageKey(userId: string) {
+  return `orders:${userId}`;
+}
+
+interface OrdersForUserProps {
+  userId: string;
+  children: ReactNode;
+}
+
+function OrdersForUser({ userId, children }: OrdersForUserProps) {
+  const storageKey = getOrdersStorageKey(userId);
+
   const [orders, setOrders] = useState<Order[]>(() => {
-    const storedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
+    const storedOrders = localStorage.getItem(storageKey);
 
     if (!storedOrders) {
       return [];
     }
 
-    return JSON.parse(storedOrders) as Order[];
+    try {
+      return JSON.parse(storedOrders) as Order[];
+    } catch {
+      localStorage.removeItem(storageKey);
+      return [];
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
-  }, [orders]);
+    localStorage.setItem(storageKey, JSON.stringify(orders));
+  }, [storageKey, orders]);
 
   function addOrder(order: Order) {
     setOrders((currentOrders) => [order, ...currentOrders]);
@@ -39,5 +54,19 @@ export function OrdersProvider({ children }: OrdersProviderProps) {
 
   return (
     <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>
+  );
+}
+
+export function OrdersProvider({ children }: OrdersProviderProps) {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <>{children}</>;
+  }
+
+  return (
+    <OrdersForUser key={user.id} userId={user.id}>
+      {children}
+    </OrdersForUser>
   );
 }
