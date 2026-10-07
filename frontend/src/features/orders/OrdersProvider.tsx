@@ -60,8 +60,25 @@ function OrdersForUser({ userId, children }: OrdersForUserProps) {
 export function OrdersProvider({ children }: OrdersProviderProps) {
   const { user } = useAuth();
 
+  /*
+   * During the initial auth restoration after a page refresh,
+   * user is temporarily null. We still need to provide OrdersContext,
+   * otherwise pages using useOrders() would crash.
+   */
+  const emptyValue = useMemo<OrdersContextValue>(
+    () => ({
+      orders: [],
+      addOrder: () => {},
+    }),
+    [],
+  );
+
   if (!user) {
-    return <>{children}</>;
+    return (
+      <OrdersContext.Provider value={emptyValue}>
+        {children}
+      </OrdersContext.Provider>
+    );
   }
 
   return (
