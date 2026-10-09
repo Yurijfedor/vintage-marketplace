@@ -630,10 +630,18 @@ input {
 
   .site-header__actions {
     margin-left: auto;
+    flex-wrap: wrap;
+    gap: 4px;
   }
 
   .header-login {
-    display: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0;
+    padding: 7px 9px;
+    font-size: 12px;
+    white-space: nowrap;
   }
 
   .header-search {
