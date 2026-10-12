@@ -58,18 +58,17 @@ function EditListingPage() {
   );
 
   const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
-
   const [errorMessage, setErrorMessage] = useState("");
 
   if (!product) {
     return (
       <section className="empty-state">
-        <h1>Artikel nicht gefunden</h1>
+        <h1>Товар не знайдено</h1>
 
-        <p>Dieser Artikel existiert nicht mehr.</p>
+        <p>Цей товар більше не існує.</p>
 
         <Link to="/seller/listings" className="empty-state__button">
-          Meine Artikel
+          Мої оголошення
         </Link>
       </section>
     );
@@ -78,12 +77,12 @@ function EditListingPage() {
   if (!user || product.sellerName !== user.name) {
     return (
       <section className="empty-state">
-        <h1>Zugriff verweigert</h1>
+        <h1>Доступ заборонено</h1>
 
-        <p>Sie können nur Ihre eigenen Artikel bearbeiten.</p>
+        <p>Ви можете редагувати лише власні оголошення.</p>
 
         <Link to="/seller/listings" className="empty-state__button">
-          Meine Artikel
+          Мої оголошення
         </Link>
       </section>
     );
@@ -93,24 +92,23 @@ function EditListingPage() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setErrorMessage("");
 
     const trimmedTitle = title.trim();
     const trimmedImageUrl = imageUrl.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage("Bitte geben Sie einen Titel ein.");
+      setErrorMessage("Введіть назву товару.");
       return;
     }
 
     if (!category) {
-      setErrorMessage("Bitte wählen Sie eine Kategorie.");
+      setErrorMessage("Виберіть категорію.");
       return;
     }
 
     if (!trimmedImageUrl) {
-      setErrorMessage("Bitte geben Sie eine Bild-URL ein.");
+      setErrorMessage("Введіть URL зображення товару.");
       return;
     }
 
@@ -118,7 +116,7 @@ function EditListingPage() {
       const numericPrice = Number(price);
 
       if (!price || !Number.isFinite(numericPrice) || numericPrice <= 0) {
-        setErrorMessage("Bitte geben Sie einen gültigen Preis ein.");
+        setErrorMessage("Введіть коректну ціну.");
         return;
       }
 
@@ -135,7 +133,6 @@ function EditListingPage() {
       };
 
       updateProduct(updatedProduct);
-
       navigate("/seller/listings");
       return;
     }
@@ -147,12 +144,12 @@ function EditListingPage() {
       !Number.isFinite(numericStartingPrice) ||
       numericStartingPrice <= 0
     ) {
-      setErrorMessage("Bitte geben Sie einen gültigen Startpreis ein.");
+      setErrorMessage("Введіть коректну початкову ціну.");
       return;
     }
 
     if (!auctionEndsAt) {
-      setErrorMessage("Bitte wählen Sie ein Auktionsende.");
+      setErrorMessage("Виберіть дату й час завершення аукціону.");
       return;
     }
 
@@ -162,7 +159,7 @@ function EditListingPage() {
       !Number.isFinite(auctionEndDate.getTime()) ||
       auctionEndDate.getTime() <= Date.now()
     ) {
-      setErrorMessage("Das Auktionsende muss in der Zukunft liegen.");
+      setErrorMessage("Аукціон має завершуватися в майбутньому.");
       return;
     }
 
@@ -193,13 +190,12 @@ function EditListingPage() {
     };
 
     updateProduct(updatedProduct);
-
     navigate("/seller/listings");
   }
 
   async function handleDelete() {
     const confirmed = window.confirm(
-      "Möchten Sie diesen Artikel wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+      "Ви справді хочете видалити це оголошення? Цю дію неможливо скасувати.",
     );
 
     if (!confirmed) {
@@ -211,7 +207,7 @@ function EditListingPage() {
       navigate("/seller/listings");
     } catch (error) {
       console.error("Failed to delete product:", error);
-      setErrorMessage("Der Artikel konnte nicht gelöscht werden.");
+      setErrorMessage("Не вдалося видалити оголошення.");
     }
   }
 
@@ -219,21 +215,21 @@ function EditListingPage() {
     <section className="checkout-page">
       <div className="checkout-page__header">
         <Link to="/seller/listings" className="product-page__back">
-          ← Meine Artikel
+          ← Мої оголошення
         </Link>
 
-        <h1>Artikel bearbeiten</h1>
+        <h1>Редагувати оголошення</h1>
 
-        <p>Bearbeiten Sie die Informationen Ihres Angebots.</p>
+        <p>Змініть інформацію про свій товар.</p>
       </div>
 
       <form onSubmit={handleSubmit}>
         <div className="checkout-page__content">
           <section className="checkout-card">
-            <h2>Artikelinformationen</h2>
+            <h2>Інформація про товар</h2>
 
             <label>
-              Titel
+              Назва товару
               <input
                 type="text"
                 value={title}
@@ -242,7 +238,7 @@ function EditListingPage() {
             </label>
 
             <label>
-              Kategorie
+              Категорія
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
@@ -256,7 +252,7 @@ function EditListingPage() {
             </label>
 
             <label>
-              Zustand
+              Стан товару
               <select
                 value={condition}
                 onChange={(event) =>
@@ -272,7 +268,7 @@ function EditListingPage() {
             </label>
 
             <label>
-              Bild-URL
+              URL зображення
               <input
                 type="url"
                 value={imageUrl}
@@ -282,7 +278,7 @@ function EditListingPage() {
           </section>
 
           <section className="checkout-card">
-            <h2>Verkaufsart</h2>
+            <h2>Спосіб продажу</h2>
 
             <label className="checkout-payment-option">
               <input
@@ -292,7 +288,6 @@ function EditListingPage() {
                 checked={listingType === "fixed-price"}
                 onChange={() => setListingType("fixed-price")}
               />
-
               {formatListingType("fixed-price")}
             </label>
 
@@ -304,13 +299,12 @@ function EditListingPage() {
                 checked={listingType === "auction"}
                 onChange={() => setListingType("auction")}
               />
-
               {formatListingType("auction")}
             </label>
 
             {listingType === "fixed-price" ? (
               <label>
-                Preis (€)
+                Ціна (€)
                 <input
                   type="number"
                   min="0.01"
@@ -322,7 +316,7 @@ function EditListingPage() {
             ) : (
               <>
                 <label>
-                  Startpreis (€)
+                  Початкова ціна (€)
                   <input
                     type="number"
                     min="0.01"
@@ -333,7 +327,7 @@ function EditListingPage() {
                 </label>
 
                 <label>
-                  Auktionsende
+                  Дата й час завершення аукціону
                   <input
                     type="datetime-local"
                     value={auctionEndsAt}
@@ -350,11 +344,11 @@ function EditListingPage() {
 
           <div>
             <button type="submit" className="checkout-summary__button">
-              Änderungen speichern
+              Зберегти зміни
             </button>
 
             <Link to="/seller/listings" className="empty-state__button">
-              Abbrechen
+              Скасувати
             </Link>
 
             <button
@@ -362,7 +356,7 @@ function EditListingPage() {
               className="seller-listing__delete"
               onClick={handleDelete}
             >
-              Artikel löschen
+              Видалити оголошення
             </button>
           </div>
         </div>

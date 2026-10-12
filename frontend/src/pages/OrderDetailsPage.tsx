@@ -14,12 +14,12 @@ function OrderDetailsPage() {
     return (
       <section className="order-details-page">
         <div className="empty-state">
-          <h1>Bestellung nicht gefunden</h1>
+          <h1>Замовлення не знайдено</h1>
 
-          <p>Die angeforderte Bestellung konnte nicht gefunden werden.</p>
+          <p>Не вдалося знайти запитане замовлення.</p>
 
           <Link to="/orders" className="empty-state__button">
-            Zu meinen Bestellungen
+            До моїх замовлень
           </Link>
         </div>
       </section>
@@ -31,23 +31,23 @@ function OrderDetailsPage() {
       <div className="order-details-page__header">
         <div>
           <Link to="/orders" className="order-details-page__back-link">
-            ← Meine Bestellungen
+            ← Мої замовлення
           </Link>
 
-          <h1>Bestellung</h1>
+          <h1>Замовлення</h1>
 
-          <p>Bestellnummer: {order.id.slice(0, 8).toUpperCase()}</p>
+          <p>Номер замовлення: {order.id.slice(0, 8).toUpperCase()}</p>
         </div>
 
         <span className="order-details-page__status">
-          {order.status === "confirmed" ? "Bestätigt" : order.status}
+          {order.status === "confirmed" ? "Підтверджено" : order.status}
         </span>
       </div>
 
       <div className="order-details-page__layout">
         <div className="order-details-page__content">
           <section className="order-details-card">
-            <h2>Artikel</h2>
+            <h2>Товари</h2>
 
             <div className="order-details-items">
               {order.items.map((item) => (
@@ -57,7 +57,7 @@ function OrderDetailsPage() {
                   <div className="order-details-item__content">
                     <h3>{item.title}</h3>
 
-                    <p>Verkäufer: {item.sellerName}</p>
+                    <p>Продавець: {item.sellerName}</p>
 
                     <span>
                       {item.quantity} × {formatPrice(item.price)}
@@ -71,7 +71,7 @@ function OrderDetailsPage() {
           </section>
 
           <section className="order-details-card">
-            <h2>Lieferadresse</h2>
+            <h2>Адреса доставки</h2>
 
             <address className="order-details-address">
               <span>
@@ -87,37 +87,37 @@ function OrderDetailsPage() {
           </section>
 
           <section className="order-details-card">
-            <h2>Zahlungsart</h2>
+            <h2>Спосіб оплати</h2>
 
             <p className="order-details-payment">
-              {order.paymentMethod === "invoice" && "Rechnung"}
+              {order.paymentMethod === "invoice" && "Рахунок"}
 
               {order.paymentMethod === "paypal" && "PayPal"}
 
-              {order.paymentMethod === "card" && "Kreditkarte"}
+              {order.paymentMethod === "card" && "Банківська картка"}
             </p>
           </section>
         </div>
 
         <aside className="order-details-summary">
-          <h2>Bestellübersicht</h2>
+          <h2>Підсумок замовлення</h2>
 
           <div className="order-details-summary__row">
-            <span>Bestelldatum</span>
+            <span>Дата замовлення</span>
 
             <strong>
-              {new Date(order.createdAt).toLocaleDateString("de-DE")}
+              {new Date(order.createdAt).toLocaleDateString("uk-UA")}
             </strong>
           </div>
 
           <div className="order-details-summary__row">
-            <span>Artikel</span>
+            <span>Кількість товарів</span>
 
             <strong>{order.totalItems}</strong>
           </div>
 
           <div className="order-details-summary__total">
-            <span>Gesamtsumme</span>
+            <span>Загальна сума</span>
 
             <strong>{formatPrice(order.totalPrice)}</strong>
           </div>

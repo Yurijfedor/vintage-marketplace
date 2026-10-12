@@ -1,17 +1,20 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { useCart } from "../features/cart/useCart";
 import { useOrders } from "../features/orders/useOrders";
 import { useProducts } from "../features/products/useProducts";
 import { formatPrice } from "../features/products/productFormatters";
 import type { FixedPriceProduct } from "../types/product";
 import type { Order, PaymentMethod } from "../types/order";
+
 function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { products } = useProducts();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [street, setStreet] = useState("");
@@ -19,37 +22,43 @@ function CheckoutPage() {
   const [city, setCity] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("invoice");
   const [errorMessage, setErrorMessage] = useState("");
+
   const cartProducts = cartItems
     .map((cartItem) => {
       const product = products.find(
         (product) => product.id === cartItem.productId,
       );
+
       if (!product || product.listingType !== "fixed-price") {
         return null;
       }
+
       return { product, quantity: cartItem.quantity };
     })
     .filter(
       (item): item is { product: FixedPriceProduct; quantity: number } =>
         item !== null,
     );
+
   const totalItems = cartProducts.reduce(
     (total, item) => total + item.quantity,
     0,
   );
+
   const totalPrice = cartProducts.reduce(
     (total, item) => total + item.product.price * item.quantity,
     0,
   );
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage("");
+
     if (cartProducts.length === 0) {
-      setErrorMessage(
-        "Ihr Warenkorb ist leer. Bitte fügen Sie zuerst Artikel hinzu.",
-      );
+      setErrorMessage("Ваш кошик порожній. Спочатку додайте товари до кошика.");
       return;
     }
+
     if (
       !firstName.trim() ||
       !lastName.trim() ||
@@ -57,9 +66,10 @@ function CheckoutPage() {
       !postalCode.trim() ||
       !city.trim()
     ) {
-      setErrorMessage("Bitte füllen Sie alle Felder der Lieferadresse aus.");
+      setErrorMessage("Будь ласка, заповніть усі поля адреси доставки.");
       return;
     }
+
     const order: Order = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
@@ -83,157 +93,162 @@ function CheckoutPage() {
       totalItems,
       totalPrice,
     };
+
     addOrder(order);
     clearCart();
     navigate("/order-success");
   }
+
   return (
     <section className="checkout-page">
-      {" "}
       <div className="checkout-page__header">
-        {" "}
-        <h1>Zur Kasse</h1>{" "}
-        <p>Überprüfen Sie Ihre Bestellung und geben Sie Ihre Daten ein.</p>{" "}
-      </div>{" "}
+        <h1>Оформлення замовлення</h1>
+        <p>Перевірте замовлення та введіть дані для доставки.</p>
+      </div>
+
       <form onSubmit={handleSubmit}>
-        {" "}
         <div className="checkout-page__layout">
-          {" "}
           <div className="checkout-page__content">
-            {" "}
             <section className="checkout-card">
-              {" "}
-              <h2>Lieferadresse</h2>{" "}
+              <h2>Адреса доставки</h2>
+
               <div className="checkout-form__row">
-                {" "}
                 <label>
-                  {" "}
-                  Vorname{" "}
+                  Ім'я
                   <input
                     type="text"
                     value={firstName}
                     onChange={(event) => setFirstName(event.target.value)}
-                  />{" "}
-                </label>{" "}
+                    autoComplete="given-name"
+                  />
+                </label>
+
                 <label>
-                  {" "}
-                  Nachname{" "}
+                  Прізвище
                   <input
                     type="text"
                     value={lastName}
                     onChange={(event) => setLastName(event.target.value)}
-                  />{" "}
-                </label>{" "}
-              </div>{" "}
+                    autoComplete="family-name"
+                  />
+                </label>
+              </div>
+
               <label>
-                {" "}
-                Straße und Hausnummer{" "}
+                Вулиця та номер будинку
                 <input
                   type="text"
                   value={street}
                   onChange={(event) => setStreet(event.target.value)}
-                />{" "}
-              </label>{" "}
+                  autoComplete="street-address"
+                />
+              </label>
+
               <div className="checkout-form__row">
-                {" "}
                 <label>
-                  {" "}
-                  PLZ{" "}
+                  Поштовий індекс
                   <input
                     type="text"
                     value={postalCode}
                     onChange={(event) => setPostalCode(event.target.value)}
-                  />{" "}
-                </label>{" "}
+                    autoComplete="postal-code"
+                  />
+                </label>
+
                 <label>
-                  {" "}
-                  Ort{" "}
+                  Місто
                   <input
                     type="text"
                     value={city}
                     onChange={(event) => setCity(event.target.value)}
-                  />{" "}
-                </label>{" "}
-              </div>{" "}
-            </section>{" "}
+                    autoComplete="address-level2"
+                  />
+                </label>
+              </div>
+            </section>
+
             <section className="checkout-card">
-              {" "}
-              <h2>Zahlungsart</h2>{" "}
+              <h2>Спосіб оплати</h2>
+
               <label className="checkout-payment-option">
-                {" "}
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="invoice"
                   checked={paymentMethod === "invoice"}
                   onChange={() => setPaymentMethod("invoice")}
-                />{" "}
-                Rechnung{" "}
-              </label>{" "}
+                />
+                Оплата за рахунком
+              </label>
+
               <label className="checkout-payment-option">
-                {" "}
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="paypal"
                   checked={paymentMethod === "paypal"}
                   onChange={() => setPaymentMethod("paypal")}
-                />{" "}
-                PayPal{" "}
-              </label>{" "}
+                />
+                PayPal
+              </label>
+
               <label className="checkout-payment-option">
-                {" "}
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="card"
                   checked={paymentMethod === "card"}
                   onChange={() => setPaymentMethod("card")}
-                />{" "}
-                Kreditkarte{" "}
-              </label>{" "}
-            </section>{" "}
-          </div>{" "}
+                />
+                Банківська картка
+              </label>
+
+              <p className="checkout-payment-note">
+                Вибір способу оплати поки що не запускає реальне списання
+                коштів.
+              </p>
+            </section>
+          </div>
+
           <aside className="checkout-summary">
-            {" "}
-            <h2>Bestellübersicht</h2>{" "}
+            <h2>Ваше замовлення</h2>
+
             <p>
-              {" "}
-              Artikel: <strong>{totalItems}</strong>{" "}
-            </p>{" "}
+              Кількість товарів: <strong>{totalItems}</strong>
+            </p>
+
             <div className="checkout-summary__items">
-              {" "}
               {cartProducts.map(({ product, quantity }) => (
                 <div className="checkout-summary__item" key={product.id}>
-                  {" "}
                   <div>
-                    {" "}
-                    <strong>{product.title}</strong>{" "}
+                    <strong>{product.title}</strong>
                     <span>
-                      {" "}
-                      {quantity} × {formatPrice(product.price)}{" "}
-                    </span>{" "}
-                  </div>{" "}
-                  <strong>{formatPrice(product.price * quantity)}</strong>{" "}
+                      {quantity} × {formatPrice(product.price)}
+                    </span>
+                  </div>
+
+                  <strong>{formatPrice(product.price * quantity)}</strong>
                 </div>
-              ))}{" "}
-            </div>{" "}
+              ))}
+            </div>
+
             <div className="checkout-summary__total">
-              {" "}
-              <span>Gesamtsumme:</span>{" "}
-              <strong>{formatPrice(totalPrice)}</strong>{" "}
-            </div>{" "}
+              <span>Разом:</span>
+              <strong>{formatPrice(totalPrice)}</strong>
+            </div>
+
             {errorMessage && (
               <p className="checkout-summary__error">{errorMessage}</p>
-            )}{" "}
+            )}
+
             <button type="submit" className="checkout-summary__button">
-              {" "}
-              Bestellung bestätigen{" "}
-            </button>{" "}
-          </aside>{" "}
-        </div>{" "}
-      </form>{" "}
+              Підтвердити замовлення
+            </button>
+          </aside>
+        </div>
+      </form>
     </section>
   );
 }
+
 export default CheckoutPage;

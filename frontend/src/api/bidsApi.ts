@@ -37,9 +37,7 @@ export async function createBid(
   if (!response.ok) {
     const data = await response.json().catch(() => null);
 
-    throw new Error(
-      data?.error ?? "Beim Abgeben des Gebots ist ein Fehler aufgetreten.",
-    );
+    throw new Error(data?.error ?? "Під час подання ставки сталася помилка.");
   }
 
   return (await response.json()) as CreatedBid;

@@ -35,7 +35,6 @@ function Header() {
 
   function handleLogout() {
     logout();
-
     navigate("/", { replace: true });
   }
 
@@ -43,7 +42,7 @@ function Header() {
     <header className="site-header">
       <div className="site-header__top">
         <Link to="/" className="site-logo">
-          Vintage
+          Вінтажна крамничка
         </Link>
 
         <form className="header-search" onSubmit={handleSearch}>
@@ -51,12 +50,12 @@ function Header() {
             type="search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Was suchen Sie?"
-            aria-label="Suche"
+            placeholder="Що шукаєте?"
+            aria-label="Пошук"
           />
 
-          <button type="submit" aria-label="Suchen">
-            Suchen
+          <button type="submit" aria-label="Шукати">
+            Знайти
           </button>
         </form>
 
@@ -64,7 +63,7 @@ function Header() {
           <Link
             to="/favorites"
             className="header-action"
-            aria-label={`Favoriten (${favoriteProductIds.length})`}
+            aria-label={`Обране (${favoriteProductIds.length})`}
           >
             {favoriteProductIds.length > 0 ? "♥" : "♡"}
 
@@ -78,25 +77,22 @@ function Header() {
           <Link
             to="/cart"
             className="header-action"
-            aria-label={`Warenkorb (${cartItemsCount})`}
+            aria-label={`Кошик (${cartItemsCount})`}
           >
             🛒
-
             {cartItemsCount > 0 && (
-              <span className="header-action__count">
-                {cartItemsCount}
-              </span>
+              <span className="header-action__count">{cartItemsCount}</span>
             )}
           </Link>
 
           {isAuthenticated ? (
             <>
               <Link to="/seller/listings" className="header-login">
-                Verkaufen
+                Мої оголошення
               </Link>
 
               <Link to="/account" className="header-login">
-                {user?.name || "Mein Bereich"}
+                {user?.name || "Мій кабінет"}
               </Link>
 
               <button
@@ -104,7 +100,7 @@ function Header() {
                 className="header-login"
                 onClick={handleLogout}
               >
-                Abmelden
+                Вийти
               </button>
             </>
           ) : (
@@ -114,11 +110,11 @@ function Header() {
                 state={{ from: location.pathname }}
                 className="header-login"
               >
-                Anmelden
+                Увійти
               </Link>
 
               <Link to="/register" className="header-login">
-                Konto erstellen
+                Реєстрація
               </Link>
             </>
           )}
@@ -126,13 +122,10 @@ function Header() {
       </div>
 
       <nav className="site-header__navigation">
-        <Link to="/categories">Kategorien</Link>
-
-        <Link to="/auctions">Auktionen</Link>
-
-        <Link to="/categories">Neu eingestellt</Link>
-
-        <Link to="/favorites">Beliebt</Link>
+        <Link to="/categories">Категорії</Link>
+        <Link to="/auctions">Аукціони</Link>
+        <Link to="/categories">Новинки</Link>
+        <Link to="/favorites">Популярне</Link>
       </nav>
     </header>
   );

@@ -24,24 +24,24 @@ function CartItem({ product, quantity }: CartItemProps) {
 
         <h2 className="cart-item__title">{product.title}</h2>
 
-        <p className="cart-item__seller">Verkäufer: {product.sellerName}</p>
+        <p className="cart-item__seller">Продавець: {product.sellerName}</p>
 
         <strong className="cart-item__price">
           {formatPrice(product.price)}
         </strong>
 
         <p className="cart-item__subtotal">
-          Zwischensumme:{" "}
+          Проміжна сума:{" "}
           <strong>{formatPrice(product.price * quantity)}</strong>
         </p>
 
         <div className="cart-item__quantity">
-          <span>Menge:</span>
+          <span>Кількість:</span>
 
           <button
             type="button"
             onClick={() => decreaseQuantity(product.id)}
-            aria-label={`${product.title} Menge verringern`}
+            aria-label={`Зменшити кількість товару «${product.title}»`}
           >
             −
           </button>
@@ -51,17 +51,18 @@ function CartItem({ product, quantity }: CartItemProps) {
           <button
             type="button"
             onClick={() => increaseQuantity(product.id)}
-            aria-label={`${product.title} Menge erhöhen`}
+            aria-label={`Збільшити кількість товару «${product.title}»`}
           >
             +
           </button>
         </div>
+
         <button
           type="button"
           className="cart-item__remove"
           onClick={() => removeFromCart(product.id)}
         >
-          Entfernen
+          Видалити з кошика
         </button>
       </div>
     </article>

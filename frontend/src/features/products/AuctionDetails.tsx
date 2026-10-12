@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import BidForm from "./BidForm";
 import Countdown from "./Countdown";
 import { useCountdown } from "./useCountdown";
@@ -30,11 +31,11 @@ function AuctionDetails({ product }: AuctionDetailsProps) {
       <strong className="product-page__price">{formatPrice(currentBid)}</strong>
 
       <p>
-        Aktuelles Gebot: <strong>{formatPrice(currentBid)}</strong>
+        Поточна ставка: <strong>{formatPrice(currentBid)}</strong>
       </p>
 
       <p>
-        Gebote: <strong>{bidCount}</strong>
+        Кількість ставок: <strong>{bidCount}</strong>
       </p>
 
       <Countdown targetDate={product.auctionEndsAt} />

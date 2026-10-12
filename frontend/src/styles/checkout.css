@@ -101,6 +101,17 @@
   margin: 0 0 20px;
 }
 
+.checkout-summary__error {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #b42318;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .checkout-summary__items {
   display: flex;
   flex-direction: column;

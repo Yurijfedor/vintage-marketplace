@@ -27,7 +27,7 @@ function ProductFilters({
   return (
     <div className="product-filters">
       <div className="product-filters__group">
-        <h2 className="product-filters__title">Kategorie</h2>
+        <h2 className="product-filters__title">Категорія</h2>
 
         <div className="product-filters__options">
           <button
@@ -37,7 +37,7 @@ function ProductFilters({
             }`}
             onClick={() => onCategoryChange(null)}
           >
-            Alle
+            Усі категорії
           </button>
 
           {categories.map((category) => {
@@ -60,7 +60,7 @@ function ProductFilters({
       </div>
 
       <div className="product-filters__group">
-        <h2 className="product-filters__title">Zustand</h2>
+        <h2 className="product-filters__title">Стан товару</h2>
 
         <div className="product-filters__options">
           <button
@@ -70,7 +70,7 @@ function ProductFilters({
             }`}
             onClick={() => onConditionChange(null)}
           >
-            Alle
+            Будь-який стан
           </button>
 
           {productConditions.map((condition) => {

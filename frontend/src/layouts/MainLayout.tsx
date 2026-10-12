@@ -11,7 +11,7 @@ function MainLayout() {
       </main>
 
       <footer className="site-footer">
-        <p>© 2026 Vintage Marketplace</p>
+        <p>© 2026 Вінтажна крамничка</p>
       </footer>
     </div>
   );

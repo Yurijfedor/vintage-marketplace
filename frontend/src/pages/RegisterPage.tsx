@@ -27,17 +27,17 @@ function RegisterPage() {
     const normalizedEmail = email.trim();
 
     if (!trimmedName || !normalizedEmail || !password) {
-      setErrorMessage("Bitte füllen Sie alle Pflichtfelder aus.");
+      setErrorMessage("Будь ласка, заповніть усі обов'язкові поля.");
       return;
     }
 
     if (password.length < 6) {
-      setErrorMessage("Das Passwort muss mindestens 6 Zeichen lang sein.");
+      setErrorMessage("Пароль має містити щонайменше 6 символів.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage("Die Passwörter stimmen nicht überein.");
+      setErrorMessage("Паролі не збігаються.");
       return;
     }
 
@@ -49,7 +49,7 @@ function RegisterPage() {
     );
 
     if (!success) {
-      setErrorMessage("Für diese E-Mail-Adresse existiert bereits ein Konto.");
+      setErrorMessage("Обліковий запис із цією електронною адресою вже існує.");
       return;
     }
 
@@ -60,60 +60,58 @@ function RegisterPage() {
     <section className="auth-page">
       <div className="auth-card">
         <div className="auth-card__header">
-          <h1>Konto erstellen</h1>
+          <h1>Створити обліковий запис</h1>
 
-          <p>
-            Erstellen Sie Ihr persönliches Konto auf dem Vintage Marketplace.
-          </p>
+          <p>Створіть особистий обліковий запис у «Вінтажній крамничці».</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
-            Name
+            Ім'я
             <input
               type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Max Mustermann"
+              placeholder="Ваше ім'я"
               autoComplete="name"
             />
           </label>
 
           <label>
-            E-Mail
+            Електронна пошта
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="ihre@email.de"
+              placeholder="name@example.com"
               autoComplete="email"
             />
           </label>
 
           <label>
-            Passwort
+            Пароль
             <input
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Mindestens 6 Zeichen"
+              placeholder="Щонайменше 6 символів"
               autoComplete="new-password"
             />
           </label>
 
           <label>
-            Passwort bestätigen
+            Повторіть пароль
             <input
               type="password"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder="Passwort wiederholen"
+              placeholder="Введіть пароль ще раз"
               autoComplete="new-password"
             />
           </label>
 
           <fieldset className="auth-form__fieldset">
-            <legend>Kontotyp</legend>
+            <legend>Тип облікового запису</legend>
 
             <label className="auth-form__radio">
               <input
@@ -123,7 +121,7 @@ function RegisterPage() {
                 checked={role === "buyer"}
                 onChange={() => setRole("buyer")}
               />
-              Käufer
+              Покупець
             </label>
 
             <label className="auth-form__radio">
@@ -134,21 +132,21 @@ function RegisterPage() {
                 checked={role === "seller"}
                 onChange={() => setRole("seller")}
               />
-              Verkäufer
+              Продавець
             </label>
           </fieldset>
 
           {errorMessage && <p className="auth-form__error">{errorMessage}</p>}
 
           <button type="submit" className="auth-form__button">
-            Konto erstellen
+            Зареєструватися
           </button>
         </form>
 
         <div className="auth-card__footer">
-          <span>Bereits registriert?</span>
+          <span>Вже маєте обліковий запис?</span>
 
-          <Link to="/login">Anmelden</Link>
+          <Link to="/login">Увійти</Link>
         </div>
       </div>
     </section>

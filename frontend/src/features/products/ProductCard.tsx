@@ -29,9 +29,7 @@ function ProductCard({ product }: ProductCardProps) {
             className={`product-card__favorite ${
               favorite ? "product-card__favorite--active" : ""
             }`}
-            aria-label={
-              favorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"
-            }
+            aria-label={favorite ? "Видалити з обраного" : "Додати до обраного"}
             onClick={(event) => {
               event.preventDefault();
               toggleFavorite(product.id);
@@ -61,7 +59,7 @@ function ProductCard({ product }: ProductCardProps) {
 
             {product.listingType === "auction" && (
               <span className="product-card__auction-info">
-                {product.bidCount} {product.bidCount === 1 ? "Gebot" : "Gebote"}
+                Ставок: {product.bidCount}
               </span>
             )}
 
@@ -69,7 +67,9 @@ function ProductCard({ product }: ProductCardProps) {
               <Countdown targetDate={product.auctionEndsAt} />
             )}
 
-            <span className="product-card__seller">{product.sellerName}</span>
+            <span className="product-card__seller">
+              Продавець: {product.sellerName}
+            </span>
           </div>
         </div>
       </Link>

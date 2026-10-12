@@ -16,18 +16,19 @@ function SellerListingsPage() {
     <section className="catalog-page">
       <div className="catalog-page__header">
         <div>
-          <h1>Meine Artikel</h1>
-          <p>Ihre aktiven Vintage- und Sammlerartikel.</p>
+          <h1>Мої оголошення</h1>
+          <p>Ваші вінтажні речі та колекційні товари.</p>
         </div>
 
         <span className="catalog-page__count">
-          {sellerProducts.length} Artikel
+          {sellerProducts.length}{" "}
+          {sellerProducts.length === 1 ? "товар" : "товарів"}
         </span>
       </div>
 
       <div className="seller-listings-page__actions">
         <Link to="/seller/listings/new" className="section-heading__link">
-          Artikel einstellen
+          Створити оголошення
         </Link>
       </div>
 
@@ -41,19 +42,19 @@ function SellerListingsPage() {
                 to={`/seller/listings/${product.id}/edit`}
                 className="seller-listing__edit"
               >
-                Bearbeiten
+                Редагувати
               </Link>
             </div>
           ))}
         </div>
       ) : (
         <div className="empty-state">
-          <h3>Noch keine Artikel</h3>
+          <h3>Поки що немає оголошень</h3>
 
-          <p>Sie haben momentan keine aktiven Artikel eingestellt.</p>
+          <p>Ви ще не опублікували жодного товару.</p>
 
           <Link to="/seller/listings/new" className="empty-state__button">
-            Ersten Artikel einstellen
+            Створити перше оголошення
           </Link>
         </div>
       )}

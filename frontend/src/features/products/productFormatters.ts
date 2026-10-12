@@ -18,22 +18,22 @@ export function getProductPrice(product: Product): number {
 
 export function formatCondition(condition: ProductCondition): string {
   const labels: Record<ProductCondition, string> = {
-    new: "Neu",
-    "very-good": "Sehr gut",
-    good: "Gut",
-    used: "Gebraucht",
-    damaged: "Beschädigt",
+    new: "Новий",
+    "very-good": "Дуже добрий",
+    good: "Добрий",
+    used: "Вживаний",
+    damaged: "Пошкоджений",
   };
 
   return labels[condition];
 }
 
 export function formatListingType(listingType: ListingType): string {
-  return listingType === "auction" ? "Auktion" : "Sofort kaufen";
+  return listingType === "auction" ? "Аукціон" : "Купити зараз";
 }
 
 export function formatDate(date: string): string {
-  return new Intl.DateTimeFormat("de-DE", {
+  return new Intl.DateTimeFormat("uk-UA", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

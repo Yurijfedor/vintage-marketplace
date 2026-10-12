@@ -24,14 +24,14 @@ function LoginPage() {
     const normalizedEmail = email.trim();
 
     if (!normalizedEmail || !password) {
-      setErrorMessage("Bitte geben Sie E-Mail und Passwort ein.");
+      setErrorMessage("Введіть електронну пошту та пароль.");
       return;
     }
 
     const success = login(normalizedEmail, password);
 
     if (!success) {
-      setErrorMessage("E-Mail oder Passwort ist falsch.");
+      setErrorMessage("Неправильна електронна пошта або пароль.");
       return;
     }
 
@@ -46,30 +46,30 @@ function LoginPage() {
     <section className="auth-page">
       <div className="auth-card">
         <div className="auth-card__header">
-          <h1>Anmelden</h1>
+          <h1>Вхід</h1>
 
-          <p>Melden Sie sich bei Ihrem Vintage Marketplace Konto an.</p>
+          <p>Увійдіть до свого облікового запису у «Вінтажній крамничці».</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
-            E-Mail
+            Електронна пошта
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="ihre@email.de"
+              placeholder="name@example.com"
               autoComplete="email"
             />
           </label>
 
           <label>
-            Passwort
+            Пароль
             <input
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Passwort"
+              placeholder="Введіть пароль"
               autoComplete="current-password"
             />
           </label>
@@ -77,14 +77,14 @@ function LoginPage() {
           {errorMessage && <p className="auth-form__error">{errorMessage}</p>}
 
           <button type="submit" className="auth-form__button">
-            Anmelden
+            Увійти
           </button>
         </form>
 
         <div className="auth-card__footer">
-          <span>Noch kein Konto?</span>
+          <span>Ще не маєте облікового запису?</span>
 
-          <Link to="/register">Konto erstellen</Link>
+          <Link to="/register">Зареєструватися</Link>
         </div>
       </div>
     </section>

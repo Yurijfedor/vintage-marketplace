@@ -8,17 +8,17 @@ function OrderSuccessPage() {
           ✓
         </div>
 
-        <h1>Vielen Dank für Ihre Bestellung!</h1>
+        <h1>Дякуємо за ваше замовлення!</h1>
 
-        <p>Ihre Bestellung wurde erfolgreich bestätigt.</p>
+        <p>Ваше замовлення успішно підтверджено.</p>
 
         <p>
-          Wir haben Ihre Bestellübersicht erhalten und bearbeiten Ihre
-          Bestellung so schnell wie möglich.
+          Ми отримали інформацію про ваше замовлення та опрацюємо його якомога
+          швидше.
         </p>
 
         <Link to="/" className="order-success-card__button">
-          Weiter einkaufen
+          Продовжити покупки
         </Link>
       </div>
     </section>

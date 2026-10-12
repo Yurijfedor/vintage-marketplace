@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
+
 import { getMinimumBid, isValidBid } from "./auctionRules";
 
 interface BidFormProps {
@@ -17,8 +18,8 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
   if (!isAuctionActive) {
     return (
       <div className="bid-form bid-form--ended">
-        <h3>Auktion beendet</h3>
-        <p>Für diese Auktion können keine Gebote mehr abgegeben werden.</p>
+        <h3>Аукціон завершено</h3>
+        <p>Для цього аукціону більше не можна робити ставки.</p>
       </div>
     );
   }
@@ -37,12 +38,12 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
     const numericAmount = Number(normalizedAmount);
 
     if (!amount.trim()) {
-      setError("Bitte geben Sie einen Betrag ein.");
+      setError("Введіть суму ставки.");
       return;
     }
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      setError("Bitte geben Sie einen gültigen Betrag ein.");
+      setError("Введіть коректну суму ставки.");
       return;
     }
 
@@ -50,9 +51,7 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
 
     if (!isValidBid(numericAmount, currentBid)) {
       setError(
-        `Das Mindestgebot beträgt ${minimumBid
-          .toFixed(2)
-          .replace(".", ",")} €.`,
+        `Мінімальна ставка — ${minimumBid.toFixed(2).replace(".", ",")} €.`,
       );
       return;
     }
@@ -63,12 +62,12 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
       await onBidSubmit(numericAmount);
 
       setAmount("");
-      setSuccess("Ihr Gebot wurde erfolgreich abgegeben.");
+      setSuccess("Вашу ставку успішно подано.");
     } catch (error) {
       setError(
         error instanceof Error
           ? error.message
-          : "Beim Abgeben des Gebots ist ein Fehler aufgetreten.",
+          : "Під час подання ставки сталася помилка.",
       );
     } finally {
       setIsSubmitting(false);
@@ -77,7 +76,7 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
 
   return (
     <div className="bid-form">
-      <h3>Ihr Gebot</h3>
+      <h3>Ваша ставка</h3>
 
       <form onSubmit={handleSubmit}>
         <div className="bid-form__input-row">
@@ -86,15 +85,15 @@ function BidForm({ currentBid, onBidSubmit, isAuctionActive }: BidFormProps) {
             inputMode="decimal"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            placeholder={`Mindestens ${getMinimumBid(currentBid)
+            placeholder={`Мінімум ${getMinimumBid(currentBid)
               .toFixed(2)
               .replace(".", ",")} €`}
-            aria-label="Ihr Gebot"
+            aria-label="Ваша ставка"
             disabled={isSubmitting}
           />
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Wird abgegeben..." : "Gebot abgeben"}
+            {isSubmitting ? "Надсилання..." : "Зробити ставку"}
           </button>
         </div>
 

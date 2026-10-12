@@ -9,13 +9,13 @@ function Countdown({ targetDate }: CountdownProps) {
 
   if (isExpired) {
     return (
-      <span className="countdown countdown--expired">Auktion beendet</span>
+      <span className="countdown countdown--expired">Аукціон завершено</span>
     );
   }
 
   return (
     <span className="countdown">
-      Noch {days} Tg. {hours} Std. {minutes} Min. {seconds} Sek.
+      Залишилося: {days} дн. {hours} год. {minutes} хв. {seconds} с.
     </span>
   );
 }
