@@ -1,10 +1,11 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useEffect, useState, useMemo } from "react";
+import type { FormEvent, ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { categories } from "../features/products/categories";
 import { formatCondition } from "../features/products/productFormatters";
 import { useProducts } from "../features/products/useProducts";
+import { uploadProductImage } from "../api/uploadsApi";
 import type { ListingType, ProductCondition } from "../types/product";
 
 const productConditions: ProductCondition[] = [
@@ -14,6 +15,9 @@ const productConditions: ProductCondition[] = [
   "used",
   "damaged",
 ];
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function CreateListingPage() {
   const navigate = useNavigate();
@@ -26,15 +30,62 @@ function CreateListingPage() {
   const [price, setPrice] = useState("");
   const [startingPrice, setStartingPrice] = useState("");
   const [auctionEndsAt, setAuctionEndsAt] = useState("");
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const imagePreview = useMemo(
+    () => (imageFile ? URL.createObjectURL(imageFile) : ""),
+    [imageFile],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
+  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    setErrorMessage("");
+    setImageUrl("");
+
+    if (!file) {
+      setImageFile(null);
+      return;
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageFile(null);
+      event.target.value = "";
+      setErrorMessage("Оберіть зображення у форматі JPG, PNG або WebP.");
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setImageFile(null);
+      event.target.value = "";
+      setErrorMessage("Розмір фотографії не повинен перевищувати 10 МБ.");
+      return;
+    }
+
+    setImageFile(file);
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) return;
+
     setErrorMessage("");
 
     const trimmedTitle = title.trim();
-    const trimmedImageUrl = imageUrl.trim();
 
     if (!trimmedTitle) {
       setErrorMessage("Введіть назву товару.");
@@ -46,86 +97,91 @@ function CreateListingPage() {
       return;
     }
 
-    if (!trimmedImageUrl) {
-      setErrorMessage("Введіть URL зображення товару.");
+    if (!imageFile) {
+      setErrorMessage("Оберіть фотографію товару.");
       return;
     }
 
+    let numericPrice: number | undefined;
+    let numericStartingPrice: number | undefined;
+    let auctionEndDate: Date | undefined;
+
     if (listingType === "fixed-price") {
-      const numericPrice = Number(price);
+      numericPrice = Number(price);
 
       if (!price || !Number.isFinite(numericPrice) || numericPrice <= 0) {
         setErrorMessage("Введіть коректну ціну.");
         return;
       }
+    } else {
+      numericStartingPrice = Number(startingPrice);
 
-      const product = {
-        title: trimmedTitle,
-        category,
-        condition,
-        listingType: "fixed-price" as const,
-        price: numericPrice,
-        imageUrl: trimmedImageUrl,
-      };
+      if (
+        !startingPrice ||
+        !Number.isFinite(numericStartingPrice) ||
+        numericStartingPrice <= 0
+      ) {
+        setErrorMessage("Введіть коректну початкову ціну.");
+        return;
+      }
 
-      addProduct(product)
-        .then(() => {
-          navigate("/seller/listings");
-        })
-        .catch((error) => {
-          console.error("Failed to create product:", error);
-          setErrorMessage("Не вдалося створити оголошення.");
+      if (!auctionEndsAt) {
+        setErrorMessage("Виберіть дату й час завершення аукціону.");
+        return;
+      }
+
+      auctionEndDate = new Date(auctionEndsAt);
+
+      if (
+        !Number.isFinite(auctionEndDate.getTime()) ||
+        auctionEndDate.getTime() <= Date.now()
+      ) {
+        setErrorMessage("Аукціон має завершуватися в майбутньому.");
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const uploadedImageUrl = await uploadProductImage(imageFile);
+      setImageUrl(uploadedImageUrl);
+
+      if (listingType === "fixed-price") {
+        await addProduct({
+          title: trimmedTitle,
+          category,
+          condition,
+          listingType: "fixed-price",
+          price: numericPrice!,
+          imageUrl: uploadedImageUrl,
         });
+      } else {
+        await addProduct({
+          title: trimmedTitle,
+          category,
+          condition,
+          listingType: "auction",
+          startingPrice: numericStartingPrice!,
+          currentBid: null,
+          bidCount: 0,
+          auctionEndsAt: auctionEndDate!.toISOString(),
+          imageUrl: uploadedImageUrl,
+        });
+      }
 
-      return;
+      navigate("/seller/listings");
+    } catch (error) {
+      console.error("Failed to upload image or create product:", error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Не вдалося завантажити фото або створити оголошення.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const numericStartingPrice = Number(startingPrice);
-
-    if (
-      !startingPrice ||
-      !Number.isFinite(numericStartingPrice) ||
-      numericStartingPrice <= 0
-    ) {
-      setErrorMessage("Введіть коректну початкову ціну.");
-      return;
-    }
-
-    if (!auctionEndsAt) {
-      setErrorMessage("Виберіть дату й час завершення аукціону.");
-      return;
-    }
-
-    const auctionEndDate = new Date(auctionEndsAt);
-
-    if (
-      !Number.isFinite(auctionEndDate.getTime()) ||
-      auctionEndDate.getTime() <= Date.now()
-    ) {
-      setErrorMessage("Аукціон має завершуватися в майбутньому.");
-      return;
-    }
-
-    const product = {
-      title: trimmedTitle,
-      category,
-      condition,
-      listingType: "auction" as const,
-      startingPrice: numericStartingPrice,
-      currentBid: null,
-      bidCount: 0,
-      auctionEndsAt: auctionEndDate.toISOString(),
-      imageUrl: trimmedImageUrl,
-    };
-
-    addProduct(product)
-      .then(() => {
-        navigate("/seller/listings");
-      })
-      .catch((error) => {
-        console.error("Failed to create product:", error);
-        setErrorMessage("Не вдалося створити оголошення.");
-      });
   }
 
   return (
@@ -155,6 +211,7 @@ function CreateListingPage() {
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 placeholder="Наприклад, стара порцелянова фігурка"
+                disabled={isSubmitting}
               />
             </label>
 
@@ -163,6 +220,7 @@ function CreateListingPage() {
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
+                disabled={isSubmitting}
               >
                 {categories.map((item) => (
                   <option key={item} value={item}>
@@ -179,6 +237,7 @@ function CreateListingPage() {
                 onChange={(event) =>
                   setCondition(event.target.value as ProductCondition)
                 }
+                disabled={isSubmitting}
               >
                 {productConditions.map((item) => (
                   <option key={item} value={item}>
@@ -188,15 +247,37 @@ function CreateListingPage() {
               </select>
             </label>
 
-            <label>
-              URL зображення
+            <div className="product-image-upload">
+              <label htmlFor="product-image">Фотографія товару</label>
+
               <input
-                type="url"
-                value={imageUrl}
-                onChange={(event) => setImageUrl(event.target.value)}
-                placeholder="https://..."
+                id="product-image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageChange}
+                disabled={isSubmitting}
               />
-            </label>
+
+              <p className="product-image-upload__hint">
+                JPG, PNG або WebP. Максимальний розмір — 10 МБ.
+              </p>
+
+              {imagePreview && (
+                <div className="product-image-upload__preview">
+                  <img
+                    src={imagePreview}
+                    alt="Попередній перегляд фотографії товару"
+                  />
+                  <p>{imageFile?.name}</p>
+                </div>
+              )}
+
+              {imageUrl && (
+                <p className="product-image-upload__success">
+                  Фотографію завантажено.
+                </p>
+              )}
+            </div>
           </section>
 
           <section className="checkout-card">
@@ -209,6 +290,7 @@ function CreateListingPage() {
                 value="fixed-price"
                 checked={listingType === "fixed-price"}
                 onChange={() => setListingType("fixed-price")}
+                disabled={isSubmitting}
               />
               Фіксована ціна
             </label>
@@ -220,6 +302,7 @@ function CreateListingPage() {
                 value="auction"
                 checked={listingType === "auction"}
                 onChange={() => setListingType("auction")}
+                disabled={isSubmitting}
               />
               Аукціон
             </label>
@@ -234,6 +317,7 @@ function CreateListingPage() {
                   value={price}
                   onChange={(event) => setPrice(event.target.value)}
                   placeholder="29.00"
+                  disabled={isSubmitting}
                 />
               </label>
             ) : (
@@ -247,6 +331,7 @@ function CreateListingPage() {
                     value={startingPrice}
                     onChange={(event) => setStartingPrice(event.target.value)}
                     placeholder="10.00"
+                    disabled={isSubmitting}
                   />
                 </label>
 
@@ -256,6 +341,7 @@ function CreateListingPage() {
                     type="datetime-local"
                     value={auctionEndsAt}
                     onChange={(event) => setAuctionEndsAt(event.target.value)}
+                    disabled={isSubmitting}
                   />
                 </label>
               </>
@@ -263,11 +349,19 @@ function CreateListingPage() {
           </section>
 
           {errorMessage && (
-            <p className="checkout-summary__error">{errorMessage}</p>
+            <p role="alert" className="checkout-summary__error">
+              {errorMessage}
+            </p>
           )}
 
-          <button type="submit" className="checkout-summary__button">
-            Опублікувати оголошення
+          <button
+            type="submit"
+            className="checkout-summary__button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? "Завантаження фото та публікація..."
+              : "Опублікувати оголошення"}
           </button>
         </div>
       </form>

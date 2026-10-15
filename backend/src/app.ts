@@ -5,6 +5,7 @@ import { CORS_ORIGIN } from "./config/env.js";
 import healthRouter from "./routes/health.routes.js";
 import productsRouter from "./routes/products.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import uploadsRouter from "./routes/uploads.routes.js";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.json());
 app.use("/api/health", healthRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/uploads", uploadsRouter);
 
 export default app;
