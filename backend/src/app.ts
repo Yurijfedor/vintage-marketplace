@@ -6,6 +6,7 @@ import healthRouter from "./routes/health.routes.js";
 import productsRouter from "./routes/products.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import uploadsRouter from "./routes/uploads.routes.js";
+import ordersRouter from "./routes/orders.routes.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/api/health", healthRouter);
 app.use("/api/products", productsRouter);
+app.use("/api/orders", ordersRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/uploads", uploadsRouter);
 

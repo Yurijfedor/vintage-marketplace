@@ -7,7 +7,8 @@ import { useOrders } from "../features/orders/useOrders";
 import { useProducts } from "../features/products/useProducts";
 import { formatPrice } from "../features/products/productFormatters";
 import type { FixedPriceProduct } from "../types/product";
-import type { Order, PaymentMethod } from "../types/order";
+import type { PaymentMethod } from "../types/order";
+import { createOrder as createOrderApi } from "../api/ordersApi";
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ function CheckoutPage() {
   const [city, setCity] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("invoice");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cartProducts = cartItems
     .map((cartItem) => {
@@ -50,8 +52,11 @@ function CheckoutPage() {
     0,
   );
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) return;
+
     setErrorMessage("");
 
     if (cartProducts.length === 0) {
@@ -70,33 +75,34 @@ function CheckoutPage() {
       return;
     }
 
-    const order: Order = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      status: "confirmed",
-      address: {
+    setIsSubmitting(true);
+
+    try {
+      const order = await createOrderApi({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         street: street.trim(),
         postalCode: postalCode.trim(),
         city: city.trim(),
-      },
-      paymentMethod,
-      items: cartProducts.map(({ product, quantity }) => ({
-        productId: product.id,
-        title: product.title,
-        imageUrl: product.imageUrl,
-        sellerName: product.sellerName,
-        quantity,
-        price: product.price,
-      })),
-      totalItems,
-      totalPrice,
-    };
+        paymentMethod,
+        items: cartProducts.map(({ product, quantity }) => ({
+          productId: product.id,
+          quantity,
+        })),
+      });
 
-    addOrder(order);
-    clearCart();
-    navigate("/order-success");
+      addOrder(order);
+      clearCart();
+      navigate("/order-success");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Не вдалося оформити замовлення. Спробуйте ще раз.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -241,8 +247,14 @@ function CheckoutPage() {
               <p className="checkout-summary__error">{errorMessage}</p>
             )}
 
-            <button type="submit" className="checkout-summary__button">
-              Підтвердити замовлення
+            <button
+              type="submit"
+              className="checkout-summary__button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Оформлення замовлення…"
+                : "Підтвердити замовлення"}
             </button>
           </aside>
         </div>
