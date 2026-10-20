@@ -96,3 +96,52 @@ export async function createOrder(order: CreateOrderRequest): Promise<Order> {
   const data = (await response.json()) as ServerOrder;
   return mapServerOrder(data);
 }
+
+interface AdminServerOrder extends ServerOrder {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface AdminOrder extends Order {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export async function getAdminOrders(): Promise<AdminOrder[]> {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new Error("Bitte melde dich zuerst an.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/orders/admin`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Sitzung abgelaufen. Bitte melde dich erneut an.");
+    }
+
+    if (response.status === 403) {
+      throw new Error("Du hast keine Administratorrechte.");
+    }
+
+    throw new Error("Bestellungen konnten nicht geladen werden.");
+  }
+
+  const data = (await response.json()) as AdminServerOrder[];
+
+  return data.map((order) => ({
+    ...mapServerOrder(order),
+    user: order.user,
+  }));
+}

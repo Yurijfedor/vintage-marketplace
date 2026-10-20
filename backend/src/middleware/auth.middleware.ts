@@ -5,13 +5,13 @@ import { JWT_SECRET } from "../config/env.js";
 export interface AuthenticatedRequest extends Request {
   user?: {
     userId: string;
-    role: "buyer" | "seller";
+    role: "buyer" | "seller" | "admin";
   };
 }
 
 interface JwtPayload {
   userId: string;
-  role: "buyer" | "seller";
+  role: "buyer" | "seller" | "admin";
 }
 
 export function authMiddleware(
@@ -46,7 +46,9 @@ export function authMiddleware(
       typeof payload !== "object" ||
       payload === null ||
       typeof payload.userId !== "string" ||
-      (payload.role !== "buyer" && payload.role !== "seller")
+      (payload.role !== "buyer" &&
+        payload.role !== "seller" &&
+        payload.role !== "admin")
     ) {
       res.status(401).json({
         message: "Invalid token payload",

@@ -19,6 +19,7 @@ import EditListingPage from "./pages/EditListingPage";
 import AccountPage from "./pages/AccountPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
 
 function App() {
   return (
@@ -63,6 +64,8 @@ function App() {
           <Route path="/orders" element={<OrdersPage />} />
 
           <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

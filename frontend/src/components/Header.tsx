@@ -91,6 +91,12 @@ function Header() {
                 Мої оголошення
               </Link>
 
+              {user?.role === "admin" && (
+                <Link to="/admin/orders" className="header-login">
+                  Адмін-панель
+                </Link>
+              )}
+
               <Link to="/account" className="header-login">
                 {user?.name || "Мій кабінет"}
               </Link>

@@ -1,9 +1,27 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
-import { createOrder } from "../repositories/order.repository.js";
+import { adminMiddleware } from "../middleware/admin.middleware.js";
+import { createOrder, getAllOrders } from "../repositories/order.repository.js";
 import { sendOrderNotification } from "../services/telegram.service.js";
 
 const ordersRouter = Router();
+
+ordersRouter.get(
+  "/admin",
+  authMiddleware,
+  adminMiddleware,
+  async (_req, res) => {
+    try {
+      const orders = await getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error("Failed to fetch admin orders:", error);
+      res.status(500).json({
+        error: "Failed to fetch orders",
+      });
+    }
+  },
+);
 
 const PAYMENT_METHODS = ["invoice", "paypal", "card"] as const;
 

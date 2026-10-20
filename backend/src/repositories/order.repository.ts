@@ -91,3 +91,21 @@ export async function createOrder(input: CreateOrderInput) {
     });
   });
 }
+
+export async function getAllOrders() {
+  return prisma.order.findMany({
+    include: {
+      items: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}

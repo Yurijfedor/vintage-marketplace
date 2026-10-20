@@ -13,7 +13,7 @@ function mapUser(user: {
   name: string;
   email: string;
   passwordHash: string;
-  role: "buyer" | "seller";
+  role: "buyer" | "seller" | "admin";
   createdAt: Date;
 }): User {
   return {
