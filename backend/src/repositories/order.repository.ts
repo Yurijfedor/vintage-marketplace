@@ -109,3 +109,30 @@ export async function getAllOrders() {
     },
   });
 }
+
+export const ORDER_STATUSES = [
+  "confirmed",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+] as const;
+
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus) {
+  return prisma.order.update({
+    where: { id: orderId },
+    data: { status },
+    include: {
+      items: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+}

@@ -145,3 +145,59 @@ export async function getAdminOrders(): Promise<AdminOrder[]> {
     user: order.user,
   }));
 }
+
+export async function updateAdminOrderStatus(
+  orderId: string,
+  status: OrderStatus,
+): Promise<AdminOrder> {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new Error("Sitzung abgelaufen. Bitte melde dich erneut an.");
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/admin/${encodeURIComponent(orderId)}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    },
+  );
+
+  if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+
+    if (response.status === 401) {
+      throw new Error("Sitzung abgelaufen. Bitte melde dich erneut an.");
+    }
+
+    if (response.status === 403) {
+      throw new Error("Du hast keine Administratorrechte.");
+    }
+
+    if (response.status === 404) {
+      throw new Error("Bestellung wurde nicht gefunden.");
+    }
+
+    if (response.status === 400) {
+      throw new Error(data?.error ?? "Ungültiger Bestellstatus.");
+    }
+
+    throw new Error(
+      data?.error ?? "Bestellstatus konnte nicht geändert werden.",
+    );
+  }
+
+  const data = (await response.json()) as AdminServerOrder;
+
+  return {
+    ...mapServerOrder(data),
+    user: data.user,
+  };
+}

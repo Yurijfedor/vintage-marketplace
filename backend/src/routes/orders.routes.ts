@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { adminMiddleware } from "../middleware/admin.middleware.js";
-import { createOrder, getAllOrders } from "../repositories/order.repository.js";
+import {
+  createOrder,
+  getAllOrders,
+  ORDER_STATUSES,
+  updateOrderStatus,
+} from "../repositories/order.repository.js";
 import { sendOrderNotification } from "../services/telegram.service.js";
 
 const ordersRouter = Router();
@@ -19,6 +24,48 @@ ordersRouter.get(
       res.status(500).json({
         error: "Failed to fetch orders",
       });
+    }
+  },
+);
+
+ordersRouter.patch(
+  "/admin/:orderId/status",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    const { orderId } = req.params;
+    const { status } = req.body ?? {};
+
+    if (
+      typeof orderId !== "string" ||
+      orderId.trim().length === 0 ||
+      typeof status !== "string" ||
+      !ORDER_STATUSES.includes(status as (typeof ORDER_STATUSES)[number])
+    ) {
+      res.status(400).json({ error: "Invalid order ID or status" });
+      return;
+    }
+
+    try {
+      const order = await updateOrderStatus(
+        orderId,
+        status as (typeof ORDER_STATUSES)[number],
+      );
+
+      res.json(order);
+    } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "P2025"
+      ) {
+        res.status(404).json({ error: "Order not found" });
+        return;
+      }
+
+      console.error("Failed to update order status:", error);
+      res.status(500).json({ error: "Failed to update order status" });
     }
   },
 );

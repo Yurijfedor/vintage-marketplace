@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAdminOrders } from "../api/ordersApi";
+import { getAdminOrders, updateAdminOrderStatus } from "../api/ordersApi";
 import type { AdminOrder } from "../api/ordersApi";
 import type { OrderStatus } from "../types/order";
 
@@ -29,6 +29,37 @@ export default function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | OrderStatus>("all");
   const [sortBy, setSortBy] = useState<"date" | "amount">("date");
+
+  const [updatingOrderIds, setUpdatingOrderIds] = useState<string[]>([]);
+
+  const handleStatusChange = async (orderId: string, status: OrderStatus) => {
+    const previousOrder = orders.find((order) => order.id === orderId);
+
+    if (!previousOrder || previousOrder.status === status) {
+      return;
+    }
+
+    setError("");
+    setUpdatingOrderIds((ids) => [...ids, orderId]);
+
+    try {
+      const updatedOrder = await updateAdminOrderStatus(orderId, status);
+
+      setOrders((currentOrders) =>
+        currentOrders.map((order) =>
+          order.id === orderId ? updatedOrder : order,
+        ),
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Не вдалося змінити статус замовлення.",
+      );
+    } finally {
+      setUpdatingOrderIds((ids) => ids.filter((id) => id !== orderId));
+    }
+  };
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -224,7 +255,29 @@ export default function AdminOrdersPage() {
                     ))}
                   </td>
                   <td>{order.paymentMethod}</td>
-                  <td>{STATUS_LABELS[order.status]}</td>
+                  <td>
+                    <select
+                      aria-label={`Статус замовлення ${order.id.slice(0, 8)}`}
+                      value={order.status}
+                      disabled={updatingOrderIds.includes(order.id)}
+                      onChange={(event) =>
+                        void handleStatusChange(
+                          order.id,
+                          event.target.value as OrderStatus,
+                        )
+                      }
+                    >
+                      {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+
+                    {updatingOrderIds.includes(order.id) && (
+                      <span role="status"> Збереження…</span>
+                    )}
+                  </td>
                   <td>{formatPrice(order.totalPrice)}</td>
                 </tr>
               ))}
