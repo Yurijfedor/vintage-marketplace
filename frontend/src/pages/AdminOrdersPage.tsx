@@ -31,6 +31,15 @@ export default function AdminOrdersPage() {
   const [sortBy, setSortBy] = useState<"date" | "amount">("date");
 
   const [updatingOrderIds, setUpdatingOrderIds] = useState<string[]>([]);
+  const [expandedOrderIds, setExpandedOrderIds] = useState<string[]>([]);
+
+  const toggleOrderDetails = (orderId: string) => {
+    setExpandedOrderIds((ids) =>
+      ids.includes(orderId)
+        ? ids.filter((id) => id !== orderId)
+        : [...ids, orderId],
+    );
+  };
 
   const handleStatusChange = async (orderId: string, status: OrderStatus) => {
     const previousOrder = orders.find((order) => order.id === orderId);
@@ -233,53 +242,162 @@ export default function AdminOrdersPage() {
                 <th>Оплата</th>
                 <th>Статус</th>
                 <th>Сума</th>
+                <th>Деталі</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((order) => (
-                <tr key={order.id}>
-                  <td>{formatDate(order.createdAt)}</td>
-                  <td title={order.id}>{order.id.slice(0, 8)}…</td>
-                  <td>
-                    <strong>{order.user.name}</strong>
-                    <br />
-                    <a href={`mailto:${order.user.email}`}>
-                      {order.user.email}
-                    </a>
-                  </td>
-                  <td>
-                    {order.items.map((item) => (
-                      <div key={item.productId}>
-                        {item.title} × {item.quantity}
-                      </div>
-                    ))}
-                  </td>
-                  <td>{order.paymentMethod}</td>
-                  <td>
-                    <select
-                      aria-label={`Статус замовлення ${order.id.slice(0, 8)}`}
-                      value={order.status}
-                      disabled={updatingOrderIds.includes(order.id)}
-                      onChange={(event) =>
-                        void handleStatusChange(
-                          order.id,
-                          event.target.value as OrderStatus,
-                        )
-                      }
-                    >
-                      {Object.entries(STATUS_LABELS).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
+                <>
+                  <tr key={order.id}>
+                    <td>{formatDate(order.createdAt)}</td>
+                    <td title={order.id}>{order.id.slice(0, 8)}…</td>
+                    <td>
+                      <strong>{order.user.name}</strong>
+                      <br />
+                      <a href={`mailto:${order.user.email}`}>
+                        {order.user.email}
+                      </a>
+                    </td>
+                    <td>
+                      {order.items.map((item) => (
+                        <div key={item.productId}>
+                          {item.title} × {item.quantity}
+                        </div>
                       ))}
-                    </select>
+                    </td>
+                    <td>{order.paymentMethod}</td>
+                    <td>
+                      <select
+                        aria-label={`Статус замовлення ${order.id.slice(0, 8)}`}
+                        value={order.status}
+                        disabled={updatingOrderIds.includes(order.id)}
+                        onChange={(event) =>
+                          void handleStatusChange(
+                            order.id,
+                            event.target.value as OrderStatus,
+                          )
+                        }
+                      >
+                        {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
 
-                    {updatingOrderIds.includes(order.id) && (
-                      <span role="status"> Збереження…</span>
-                    )}
-                  </td>
-                  <td>{formatPrice(order.totalPrice)}</td>
-                </tr>
+                      {updatingOrderIds.includes(order.id) && (
+                        <span role="status"> Збереження…</span>
+                      )}
+                    </td>
+                    <td>{formatPrice(order.totalPrice)}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="admin-orders-details-button"
+                        aria-expanded={expandedOrderIds.includes(order.id)}
+                        onClick={() => toggleOrderDetails(order.id)}
+                      >
+                        {expandedOrderIds.includes(order.id)
+                          ? "Сховати"
+                          : "Деталі"}
+                      </button>
+                    </td>
+                  </tr>
+
+                  {expandedOrderIds.includes(order.id) && (
+                    <tr
+                      key={`${order.id}-details`}
+                      className="admin-orders-details-row"
+                    >
+                      <td colSpan={8}>
+                        <div className="admin-orders-details">
+                          <section className="admin-orders-details-section">
+                            <h3>Покупець і доставка</h3>
+                            <p>
+                              <strong>Покупець:</strong> {order.user.name}
+                            </p>
+                            <p>
+                              <strong>Email:</strong>{" "}
+                              <a href={`mailto:${order.user.email}`}>
+                                {order.user.email}
+                              </a>
+                            </p>
+                            <p>
+                              <strong>Отримувач:</strong>{" "}
+                              {order.address.firstName} {order.address.lastName}
+                            </p>
+                            <p>
+                              <strong>Адреса:</strong> {order.address.street},{" "}
+                              {order.address.postalCode} {order.address.city}
+                            </p>
+                          </section>
+
+                          <section className="admin-orders-details-section">
+                            <h3>Інформація про замовлення</h3>
+                            <p>
+                              <strong>Повний ID:</strong>{" "}
+                              <span className="admin-orders-full-id">
+                                {order.id}
+                              </span>
+                            </p>
+                            <p>
+                              <strong>Дата:</strong>{" "}
+                              {formatDate(order.createdAt)}
+                            </p>
+                            <p>
+                              <strong>Спосіб оплати:</strong>{" "}
+                              {order.paymentMethod}
+                            </p>
+                            <p>
+                              <strong>Кількість одиниць:</strong>{" "}
+                              {order.totalItems}
+                            </p>
+                            <p>
+                              <strong>Загальна сума:</strong>{" "}
+                              {formatPrice(order.totalPrice)}
+                            </p>
+                          </section>
+
+                          <section className="admin-orders-details-section admin-orders-details-products">
+                            <h3>Товари в замовленні</h3>
+
+                            {order.items.map((item) => (
+                              <div
+                                key={item.productId}
+                                className="admin-orders-product"
+                              >
+                                {item.imageUrl ? (
+                                  <img
+                                    src={item.imageUrl}
+                                    alt={item.title}
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="admin-orders-product-placeholder">
+                                    Немає фото
+                                  </div>
+                                )}
+
+                                <div className="admin-orders-product-info">
+                                  <strong>{item.title}</strong>
+                                  <span>Продавець: {item.sellerName}</span>
+                                  <span>Кількість: {item.quantity}</span>
+                                  <span>
+                                    Ціна за одиницю: {formatPrice(item.price)}
+                                  </span>
+                                </div>
+
+                                <strong className="admin-orders-product-total">
+                                  {formatPrice(item.price * item.quantity)}
+                                </strong>
+                              </div>
+                            ))}
+                          </section>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>

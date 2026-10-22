@@ -3,6 +3,7 @@
 @import "../styles/checkout.css";
 @import "../styles/orders.css";
 @import "../styles/order-details.css";
+@import "../styles/admin-orders.css";
 
 :root {
   font-family:
