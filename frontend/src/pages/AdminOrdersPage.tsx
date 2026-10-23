@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getAdminOrders, updateAdminOrderStatus } from "../api/ordersApi";
+import { useProducts } from "../features/products/useProducts";
 import type { AdminOrder } from "../api/ordersApi";
 import type { OrderStatus } from "../types/order";
 
@@ -23,6 +24,8 @@ function formatPrice(value: number): string {
 }
 
 export default function AdminOrdersPage() {
+  const { refreshProducts } = useProducts();
+
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -59,6 +62,12 @@ export default function AdminOrdersPage() {
           order.id === orderId ? updatedOrder : order,
         ),
       );
+
+      try {
+        await refreshProducts();
+      } catch (error) {
+        console.error("Failed to refresh products after status change:", error);
+      }
     } catch (err) {
       setError(
         err instanceof Error

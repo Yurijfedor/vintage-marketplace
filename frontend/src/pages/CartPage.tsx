@@ -24,6 +24,11 @@ function CartPage() {
     [cartItems, products],
   );
 
+  const hasUnavailableItems = cartProducts.some(
+    ({ product, quantity }) =>
+      product.availableQuantity === 0 || quantity > product.availableQuantity,
+  );
+
   const totalQuantity = useMemo(
     () =>
       cartProducts.reduce((total, cartItem) => total + cartItem.quantity, 0),
@@ -80,9 +85,16 @@ function CartPage() {
               Разом: <strong>{formatPrice(totalPrice)}</strong>
             </p>
 
-            <Link to="/checkout" className="cart-summary__checkout">
-              Перейти до оформлення
-            </Link>
+            {hasUnavailableItems ? (
+              <p role="alert">
+                Деякі товари недоступні або їх кількість перевищує залишок.
+                Змініть кількість товарів, щоб продовжити оформлення.
+              </p>
+            ) : (
+              <Link to="/checkout" className="cart-summary__checkout">
+                Перейти до оформлення
+              </Link>
+            )}
           </aside>
         )}
 

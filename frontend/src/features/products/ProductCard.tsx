@@ -57,6 +57,14 @@ function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
 
+            {product.listingType === "fixed-price" && (
+              <span className="product-card__stock">
+                {product.availableQuantity > 0
+                  ? `У наявності: ${product.availableQuantity} шт.`
+                  : "Немає в наявності"}
+              </span>
+            )}
+
             {product.listingType === "auction" && (
               <span className="product-card__auction-info">
                 Ставок: {product.bidCount}

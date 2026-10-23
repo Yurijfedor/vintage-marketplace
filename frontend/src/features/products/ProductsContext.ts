@@ -6,6 +6,7 @@ export interface ProductsContextValue {
   addProduct: (product: CreateProductInput) => Promise<Product>;
   updateProduct: (product: Product) => Promise<Product>;
   removeProduct: (productId: string) => Promise<void>;
+  refreshProducts: () => Promise<void>;
 }
 export const ProductsContext = createContext<ProductsContextValue | undefined>(
   undefined,

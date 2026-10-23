@@ -20,6 +20,11 @@ export function ProductsProvider({ children }: ProductsProviderProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const refreshProducts = async (): Promise<void> => {
+    const loadedProducts = await getProducts();
+    setProducts(loadedProducts);
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -82,7 +87,13 @@ export function ProductsProvider({ children }: ProductsProviderProps) {
 
   return (
     <ProductsContext.Provider
-      value={{ products, addProduct, updateProduct, removeProduct }}
+      value={{
+        products,
+        addProduct,
+        updateProduct,
+        removeProduct,
+        refreshProducts,
+      }}
     >
       {children}
     </ProductsContext.Provider>

@@ -152,9 +152,20 @@ productsRouter.put(
     }
 
     if (listingType === "fixed-price") {
-      const { price } = req.body;
+      if (existingProduct.listingType !== "fixed-price") {
+        res.status(400).json({ message: "Product listing type mismatch" });
+        return;
+      }
+      const { price, stockQuantity = existingProduct.stockQuantity } = req.body;
 
-      if (typeof price !== "number" || price < 0) {
+      if (
+        typeof price !== "number" ||
+        !Number.isFinite(price) ||
+        price < 0 ||
+        !Number.isInteger(stockQuantity) ||
+        stockQuantity < 1 ||
+        stockQuantity > 9999
+      ) {
         res.status(400).json({
           error: "Invalid fixed-price product data",
         });
@@ -170,6 +181,7 @@ productsRouter.put(
         sellerName: existingProduct.sellerName,
         listingType,
         price,
+        stockQuantity,
       });
 
       res.json(product);
@@ -282,9 +294,16 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
   }
 
   if (listingType === "fixed-price") {
-    const { price } = req.body;
+    const { price, stockQuantity = 1 } = req.body;
 
-    if (typeof price !== "number" || price < 0) {
+    if (
+      typeof price !== "number" ||
+      !Number.isFinite(price) ||
+      price < 0 ||
+      !Number.isInteger(stockQuantity) ||
+      stockQuantity < 1 ||
+      stockQuantity > 9999
+    ) {
       res.status(400).json({
         error: "Invalid fixed-price product data",
       });
@@ -301,6 +320,7 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
       sellerName: user.name,
       listingType,
       price,
+      stockQuantity,
     });
 
     res.status(201).json(product);

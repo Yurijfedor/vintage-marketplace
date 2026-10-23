@@ -204,6 +204,9 @@ function EditListingPage() {
         : imageUrl.trim();
 
       if (listingType === "fixed-price") {
+        if (currentProduct.listingType !== "fixed-price") {
+          return;
+        }
         const updatedProduct: FixedPriceProduct = {
           id: currentProduct.id,
           title: trimmedTitle,
@@ -211,6 +214,8 @@ function EditListingPage() {
           condition,
           listingType: "fixed-price",
           price: numericPrice!,
+          stockQuantity: currentProduct.stockQuantity,
+          availableQuantity: currentProduct.availableQuantity,
           imageUrl: finalImageUrl,
           sellerName: currentProduct.sellerName,
           createdAt: currentProduct.createdAt,

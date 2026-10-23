@@ -64,6 +64,21 @@ ordersRouter.patch(
         return;
       }
 
+      if (error instanceof Error) {
+        if (error.message === "Order not found") {
+          res.status(404).json({ error: error.message });
+          return;
+        }
+
+        if (
+          error.message.startsWith("Invalid order status transition") ||
+          error.message.startsWith("Insufficient stock to confirm order")
+        ) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+      }
+
       console.error("Failed to update order status:", error);
       res.status(500).json({ error: "Failed to update order status" });
     }
@@ -133,12 +148,12 @@ ordersRouter.post("/", authMiddleware, async (req, res) => {
     res.status(201).json(order);
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === "One or more products are unavailable") {
-        res.status(400).json({ error: error.message });
-        return;
-      }
-
-      if (error.message === "Invalid item quantity") {
+      if (
+        error.message === "One or more products are unavailable" ||
+        error.message === "Invalid item quantity" ||
+        error.message === "Duplicate products in order" ||
+        error.message.startsWith("Not enough stock for")
+      ) {
         res.status(400).json({ error: error.message });
         return;
       }

@@ -26,6 +26,12 @@ function CartItem({ product, quantity }: CartItemProps) {
 
         <p className="cart-item__seller">Продавець: {product.sellerName}</p>
 
+        <p>
+          {product.availableQuantity > 0
+            ? `Доступно: ${product.availableQuantity} шт.`
+            : "Немає в наявності"}
+        </p>
+
         <strong className="cart-item__price">
           {formatPrice(product.price)}
         </strong>
@@ -52,6 +58,7 @@ function CartItem({ product, quantity }: CartItemProps) {
             type="button"
             onClick={() => increaseQuantity(product.id)}
             aria-label={`Збільшити кількість товару «${product.title}»`}
+            disabled={quantity >= product.availableQuantity}
           >
             +
           </button>

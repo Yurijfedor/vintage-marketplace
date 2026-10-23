@@ -21,6 +21,8 @@ export interface BaseProduct {
 export interface FixedPriceProduct extends BaseProduct {
   listingType: "fixed-price";
   price: number;
+  stockQuantity: number;
+  availableQuantity: number;
 }
 
 export interface AuctionProduct extends BaseProduct {

@@ -38,6 +38,12 @@ function ProductDetails({ product }: ProductDetailsProps) {
           </strong>
 
           <p>Фіксована ціна</p>
+
+          <p>
+            {product.availableQuantity > 0
+              ? `У наявності: ${product.availableQuantity} шт.`
+              : "Немає в наявності"}
+          </p>
         </>
       )}
 
@@ -74,8 +80,9 @@ function ProductDetails({ product }: ProductDetailsProps) {
           type="button"
           className="product-page__button"
           onClick={handleAddToCart}
+          disabled={product.availableQuantity === 0}
         >
-          Купити
+          {product.availableQuantity === 0 ? "Немає в наявності" : "Купити"}
         </button>
       )}
 

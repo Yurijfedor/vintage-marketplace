@@ -12,6 +12,8 @@ export const mockProducts: Product[] = [
       "https://images.unsplash.com/photo-1577083288073-40892c0860a4?auto=format&fit=crop&w=800&q=80",
     sellerName: "VintageShop",
     createdAt: "2026-08-20T10:30:00",
+    stockQuantity: 5,
+    availableQuantity: 5,
   },
   {
     id: "2",
@@ -39,6 +41,8 @@ export const mockProducts: Product[] = [
       "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?auto=format&fit=crop&w=800&q=80",
     sellerName: "SecondLife",
     createdAt: "2026-08-30T09:45:00",
+    stockQuantity: 5,
+    availableQuantity: 5,
   },
   {
     id: "4",

@@ -14,8 +14,7 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
-  const { products } = useProducts();
-
+  const { products, refreshProducts } = useProducts();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [street, setStreet] = useState("");
@@ -64,6 +63,20 @@ function CheckoutPage() {
       return;
     }
 
+    const unavailableItem = cartProducts.find(
+      ({ product, quantity }) =>
+        product.availableQuantity === 0 || quantity > product.availableQuantity,
+    );
+
+    if (unavailableItem) {
+      setErrorMessage(
+        unavailableItem.product.availableQuantity === 0
+          ? `Товар "${unavailableItem.product.title}" більше не доступний.`
+          : `Для товару "${unavailableItem.product.title}" доступно лише ${unavailableItem.product.availableQuantity} шт. Змініть кількість у кошику.`,
+      );
+      return;
+    }
+
     if (
       !firstName.trim() ||
       !lastName.trim() ||
@@ -93,6 +106,13 @@ function CheckoutPage() {
 
       addOrder(order);
       clearCart();
+
+      try {
+        await refreshProducts();
+      } catch (error) {
+        console.error("Failed to refresh products after checkout:", error);
+      }
+
       navigate("/order-success");
     } catch (error) {
       setErrorMessage(

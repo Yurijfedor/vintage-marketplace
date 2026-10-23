@@ -28,6 +28,7 @@ function CreateListingPage() {
   const [condition, setCondition] = useState<ProductCondition>("good");
   const [listingType, setListingType] = useState<ListingType>("fixed-price");
   const [price, setPrice] = useState("");
+  const [stockQuantity, setStockQuantity] = useState("1");
   const [startingPrice, setStartingPrice] = useState("");
   const [auctionEndsAt, setAuctionEndsAt] = useState("");
 
@@ -104,9 +105,22 @@ function CreateListingPage() {
 
     let numericPrice: number | undefined;
     let numericStartingPrice: number | undefined;
+    let numericStockQuantity: number | undefined;
     let auctionEndDate: Date | undefined;
 
     if (listingType === "fixed-price") {
+      numericStockQuantity = Number(stockQuantity);
+
+      if (
+        !stockQuantity ||
+        !Number.isInteger(numericStockQuantity) ||
+        numericStockQuantity < 1 ||
+        numericStockQuantity > 9999
+      ) {
+        setErrorMessage("Кількість має бути цілим числом від 1 до 9999.");
+        return;
+      }
+
       numericPrice = Number(price);
 
       if (!price || !Number.isFinite(numericPrice) || numericPrice <= 0) {
@@ -154,6 +168,8 @@ function CreateListingPage() {
           condition,
           listingType: "fixed-price",
           price: numericPrice!,
+          stockQuantity: numericStockQuantity!,
+          availableQuantity: numericStockQuantity!,
           imageUrl: uploadedImageUrl,
         });
       } else {
@@ -308,18 +324,32 @@ function CreateListingPage() {
             </label>
 
             {listingType === "fixed-price" ? (
-              <label>
-                Ціна (€)
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  value={price}
-                  onChange={(event) => setPrice(event.target.value)}
-                  placeholder="29.00"
-                  disabled={isSubmitting}
-                />
-              </label>
+              <>
+                <label>
+                  Ціна (€)
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    value={price}
+                    onChange={(event) => setPrice(event.target.value)}
+                    placeholder="29.00"
+                    disabled={isSubmitting}
+                  />
+                </label>
+                <label>
+                  Кількість товару
+                  <input
+                    type="number"
+                    min={1}
+                    max={9999}
+                    step={1}
+                    value={stockQuantity}
+                    onChange={(event) => setStockQuantity(event.target.value)}
+                    disabled={isSubmitting}
+                  />
+                </label>
+              </>
             ) : (
               <>
                 <label>

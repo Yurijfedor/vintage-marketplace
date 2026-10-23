@@ -11,6 +11,7 @@ type CreateProductInput =
       sellerName: string;
       listingType: "fixed-price";
       price: number;
+      stockQuantity: number;
     }
   | {
       title: string;
@@ -35,6 +36,7 @@ type UpdateProductInput =
       sellerName: string;
       listingType: "fixed-price";
       price: number;
+      stockQuantity: number;
     }
   | {
       title: string;
@@ -55,6 +57,8 @@ function mapProduct(product: {
   listingType: "fixed_price" | "auction";
   imageUrl: string;
   price: { toNumber(): number } | null;
+  stockQuantity: number;
+  availableQuantity?: number;
   startingPrice: { toNumber(): number } | null;
   currentBid: { toNumber(): number } | null;
   bidCount: number;
@@ -81,6 +85,8 @@ function mapProduct(product: {
       condition: conditionMap[product.condition],
       listingType: "fixed-price",
       price: product.price!.toNumber(),
+      stockQuantity: product.stockQuantity,
+      availableQuantity: product.availableQuantity ?? product.stockQuantity,
       imageUrl: product.imageUrl,
       sellerId: product.sellerId,
       sellerName: product.seller.name,
@@ -121,7 +127,41 @@ export async function getAllProducts(): Promise<Product[]> {
     },
   });
 
-  return products.map(mapProduct);
+  const fixedPriceIds = products
+    .filter((product) => product.listingType === "fixed_price")
+    .map((product) => product.id);
+
+  const reservations = fixedPriceIds.length
+    ? await prisma.orderItem.groupBy({
+        by: ["productId"],
+        where: {
+          productId: { in: fixedPriceIds },
+          order: { status: "processing" },
+        },
+        _sum: { quantity: true },
+      })
+    : [];
+
+  const reservedByProductId = new Map(
+    reservations.map((reservation) => [
+      reservation.productId,
+      reservation._sum.quantity ?? 0,
+    ]),
+  );
+
+  return products.map((product) =>
+    mapProduct({
+      ...product,
+      availableQuantity:
+        product.listingType === "fixed_price"
+          ? Math.max(
+              0,
+              product.stockQuantity -
+                (reservedByProductId.get(product.id) ?? 0),
+            )
+          : undefined,
+    }),
+  );
 }
 
 export async function getProductById(
@@ -134,7 +174,28 @@ export async function getProductById(
     include: productInclude,
   });
 
-  return product ? mapProduct(product) : undefined;
+  if (!product) {
+    return undefined;
+  }
+
+  if (product.listingType !== "fixed_price") {
+    return mapProduct(product);
+  }
+
+  const reservations = await prisma.orderItem.aggregate({
+    where: {
+      productId,
+      order: { status: "processing" },
+    },
+    _sum: { quantity: true },
+  });
+
+  const reservedQuantity = reservations._sum.quantity ?? 0;
+
+  return mapProduct({
+    ...product,
+    availableQuantity: Math.max(0, product.stockQuantity - reservedQuantity),
+  });
 }
 
 export async function updateProduct(
@@ -168,6 +229,7 @@ export async function updateProduct(
               | "damaged",
             listingType: "fixed_price",
             price: input.price,
+            stockQuantity: input.stockQuantity,
             startingPrice: null,
             currentBid: null,
             bidCount: 0,
@@ -241,6 +303,7 @@ export async function createProduct(
               | "damaged",
             listingType: "fixed_price",
             price: input.price,
+            stockQuantity: input.stockQuantity,
             startingPrice: null,
             currentBid: null,
             bidCount: 0,

@@ -46,6 +46,7 @@ model Product {
   condition   ProductCondition
   listingType ListingType
   imageUrl    String
+  stockQuantity Int       @default(1)
 
   price         Decimal?
   startingPrice Decimal?
