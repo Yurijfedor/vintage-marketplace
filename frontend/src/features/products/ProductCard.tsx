@@ -44,6 +44,10 @@ function ProductCard({ product }: ProductCardProps) {
 
           <h3 className="product-card__title">{product.title}</h3>
 
+          {product.description && (
+            <p className="product-card__description">{product.description}</p>
+          )}
+
           <div className="product-card__footer">
             <div className="product-card__price-row">
               <strong className="product-card__price">

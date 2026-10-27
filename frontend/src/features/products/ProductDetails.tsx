@@ -29,6 +29,10 @@ function ProductDetails({ product }: ProductDetailsProps) {
 
       <h1>{product.title}</h1>
 
+      {product.description && (
+        <p className="product-page__description">{product.description}</p>
+      )}
+
       {product.listingType === "auction" ? (
         <AuctionDetails product={product} />
       ) : (

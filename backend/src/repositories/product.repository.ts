@@ -4,6 +4,7 @@ import prisma from "../lib/prisma.js";
 type CreateProductInput =
   | {
       title: string;
+      description: string | null;
       category: string;
       condition: Product["condition"];
       imageUrl: string;
@@ -15,6 +16,7 @@ type CreateProductInput =
     }
   | {
       title: string;
+      description: string | null;
       category: string;
       condition: Product["condition"];
       imageUrl: string;
@@ -30,6 +32,7 @@ type CreateProductInput =
 type UpdateProductInput =
   | {
       title: string;
+      description: string | null;
       category: string;
       condition: Product["condition"];
       imageUrl: string;
@@ -40,6 +43,7 @@ type UpdateProductInput =
     }
   | {
       title: string;
+      description: string | null;
       category: string;
       condition: Product["condition"];
       imageUrl: string;
@@ -52,6 +56,7 @@ type UpdateProductInput =
 function mapProduct(product: {
   id: string;
   title: string;
+  description: string | null;
   category: string;
   condition: "new" | "very_good" | "good" | "used" | "damaged";
   listingType: "fixed_price" | "auction";
@@ -81,6 +86,7 @@ function mapProduct(product: {
     return {
       id: product.id,
       title: product.title,
+      description: product.description,
       category: product.category,
       condition: conditionMap[product.condition],
       listingType: "fixed-price",
@@ -97,6 +103,7 @@ function mapProduct(product: {
   return {
     id: product.id,
     title: product.title,
+    description: product.description,
     category: product.category,
     condition: conditionMap[product.condition],
     listingType: "auction",
@@ -148,20 +155,24 @@ export async function getAllProducts(): Promise<Product[]> {
       reservation._sum.quantity ?? 0,
     ]),
   );
-
-  return products.map((product) =>
-    mapProduct({
-      ...product,
-      availableQuantity:
-        product.listingType === "fixed_price"
-          ? Math.max(
-              0,
-              product.stockQuantity -
-                (reservedByProductId.get(product.id) ?? 0),
-            )
-          : undefined,
-    }),
-  );
+  return products
+    .map((product) =>
+      mapProduct({
+        ...product,
+        availableQuantity:
+          product.listingType === "fixed_price"
+            ? Math.max(
+                0,
+                product.stockQuantity -
+                  (reservedByProductId.get(product.id) ?? 0),
+              )
+            : undefined,
+      }),
+    )
+    .filter(
+      (product) =>
+        product.listingType === "auction" || product.availableQuantity > 0,
+    );
 }
 
 export async function getProductById(
@@ -220,6 +231,7 @@ export async function updateProduct(
           },
           data: {
             title: input.title,
+            description: input.description,
             category: input.category,
             condition: input.condition.replace("-", "_") as
               | "new"
@@ -244,6 +256,7 @@ export async function updateProduct(
           },
           data: {
             title: input.title,
+            description: input.description,
             category: input.category,
             condition: input.condition.replace("-", "_") as
               | "new"
@@ -294,6 +307,7 @@ export async function createProduct(
       ? await prisma.product.create({
           data: {
             title: input.title,
+            description: input.description,
             category: input.category,
             condition: input.condition.replace("-", "_") as
               | "new"
@@ -316,6 +330,7 @@ export async function createProduct(
       : await prisma.product.create({
           data: {
             title: input.title,
+            description: input.description,
             category: input.category,
             condition: input.condition.replace("-", "_") as
               | "new"

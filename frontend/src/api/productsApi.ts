@@ -65,15 +65,18 @@ export async function updateProduct(product: Product): Promise<Product> {
     product.listingType === "fixed-price"
       ? {
           title: product.title,
+          description: product.description,
           category: product.category,
           condition: product.condition,
           imageUrl: product.imageUrl,
           sellerName: product.sellerName,
           listingType: "fixed-price" as const,
           price: product.price,
+          stockQuantity: product.stockQuantity,
         }
       : {
           title: product.title,
+          description: product.description,
           category: product.category,
           condition: product.condition,
           imageUrl: product.imageUrl,

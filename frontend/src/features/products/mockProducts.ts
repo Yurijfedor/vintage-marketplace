@@ -4,6 +4,7 @@ export const mockProducts: Product[] = [
   {
     id: "1",
     title: "Alte Porzellanfigur",
+    description: "Вінтажна порцелянова фігурка в хорошому стані.",
     category: "Porzellan",
     condition: "good",
     listingType: "fixed-price",
@@ -18,6 +19,7 @@ export const mockProducts: Product[] = [
   {
     id: "2",
     title: "Schallplatte – Klassische Musik",
+    description: "Вінтажна порцелянова фігурка в хорошому стані.",
     category: "Schallplatten",
     condition: "very-good",
     listingType: "auction",
@@ -33,6 +35,7 @@ export const mockProducts: Product[] = [
   {
     id: "3",
     title: "CD Sammlung – 90er Jahre",
+    description: "Вінтажна порцелянова фігурка в хорошому стані.",
     category: "CDs",
     condition: "good",
     listingType: "fixed-price",
@@ -47,6 +50,7 @@ export const mockProducts: Product[] = [
   {
     id: "4",
     title: "Vintage Dekoration",
+    description: "Вінтажна порцелянова фігурка в хорошому стані.",
     category: "Dekoration",
     condition: "used",
     listingType: "auction",

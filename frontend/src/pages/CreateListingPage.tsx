@@ -8,6 +8,8 @@ import { useProducts } from "../features/products/useProducts";
 import { uploadProductImage } from "../api/uploadsApi";
 import type { ListingType, ProductCondition } from "../types/product";
 
+import "../styles/create-product.css";
+
 const productConditions: ProductCondition[] = [
   "new",
   "very-good",
@@ -24,6 +26,7 @@ function CreateListingPage() {
   const { addProduct } = useProducts();
 
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0] ?? "");
   const [condition, setCondition] = useState<ProductCondition>("good");
   const [listingType, setListingType] = useState<ListingType>("fixed-price");
@@ -164,6 +167,7 @@ function CreateListingPage() {
       if (listingType === "fixed-price") {
         await addProduct({
           title: trimmedTitle,
+          description: description.trim() || null,
           category,
           condition,
           listingType: "fixed-price",
@@ -175,6 +179,7 @@ function CreateListingPage() {
       } else {
         await addProduct({
           title: trimmedTitle,
+          description: description.trim() || null,
           category,
           condition,
           listingType: "auction",
@@ -227,6 +232,18 @@ function CreateListingPage() {
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 placeholder="Наприклад, стара порцелянова фігурка"
+                disabled={isSubmitting}
+              />
+            </label>
+
+            <label>
+              Опис товару
+              <textarea
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Опишіть товар, його стан, вік, особливості та дефекти"
+                rows={5}
+                maxLength={5000}
                 disabled={isSubmitting}
               />
             </label>
@@ -326,7 +343,7 @@ function CreateListingPage() {
             {listingType === "fixed-price" ? (
               <>
                 <label>
-                  Ціна (€)
+                  Ціна (₴)
                   <input
                     type="number"
                     min="0.01"
@@ -353,7 +370,7 @@ function CreateListingPage() {
             ) : (
               <>
                 <label>
-                  Початкова ціна (€)
+                  Початкова ціна (₴)
                   <input
                     type="number"
                     min="0.01"

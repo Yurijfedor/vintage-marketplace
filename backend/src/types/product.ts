@@ -10,6 +10,7 @@ export type ListingType = "fixed-price" | "auction";
 export interface BaseProduct {
   id: string;
   title: string;
+  description: string | null;
   category: string;
   condition: ProductCondition;
   imageUrl: string;

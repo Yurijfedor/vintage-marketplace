@@ -5,7 +5,7 @@ import type {
 } from "../../types/product";
 
 export function formatPrice(price: number): string {
-  return `${price.toFixed(2).replace(".", ",")} €`;
+  return `${price.toFixed(2).replace(".", ",")} ₴`;
 }
 
 export function getProductPrice(product: Product): number {

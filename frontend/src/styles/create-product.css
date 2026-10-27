@@ -1,0 +1,30 @@
+.product-image-upload__preview {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 16px;
+}
+
+.product-image-upload__preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.product-image-upload__preview p {
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+
+.product-image-upload__preview-image {
+  display: block;
+  max-width: 100%;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}

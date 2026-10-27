@@ -104,7 +104,14 @@ productsRouter.put(
   authMiddleware,
   sellerMiddleware,
   async (req, res) => {
-    const { title, category, condition, imageUrl, listingType } = req.body;
+    const {
+      title,
+      description = "",
+      category,
+      condition,
+      imageUrl,
+      listingType,
+    } = req.body;
 
     const productId = req.params.productId;
 
@@ -113,6 +120,11 @@ productsRouter.put(
         error: "Invalid product ID",
       });
 
+      return;
+    }
+
+    if (description !== null && typeof description !== "string") {
+      res.status(400).json({ error: "Invalid product description" });
       return;
     }
 
@@ -175,6 +187,8 @@ productsRouter.put(
 
       const product = await updateProduct(productId, {
         title: title.trim(),
+        description:
+          typeof description === "string" ? description.trim() || null : null,
         category: category.trim(),
         condition,
         imageUrl: imageUrl.trim(),
@@ -211,6 +225,8 @@ productsRouter.put(
 
     const product = await updateProduct(productId, {
       title: title.trim(),
+      description:
+        typeof description === "string" ? description.trim() || null : null,
       category: category.trim(),
       condition,
       imageUrl: imageUrl.trim(),
@@ -264,7 +280,14 @@ productsRouter.delete(
 );
 
 productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
-  const { title, category, condition, imageUrl, listingType } = req.body;
+  const {
+    title,
+    description = "",
+    category,
+    condition,
+    imageUrl,
+    listingType,
+  } = req.body;
 
   const user = await getUserById(req.user!.userId);
 
@@ -273,6 +296,11 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
       error: "User not found",
     });
 
+    return;
+  }
+
+  if (typeof description !== "string") {
+    res.status(400).json({ error: "Invalid product description" });
     return;
   }
 
@@ -313,6 +341,7 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
 
     const product = await createProduct({
       title: title.trim(),
+      description: description.trim() || null,
       category: category.trim(),
       condition,
       imageUrl: imageUrl.trim(),
@@ -349,6 +378,7 @@ productsRouter.post("/", authMiddleware, sellerMiddleware, async (req, res) => {
 
   const product = await createProduct({
     title: title.trim(),
+    description: description.trim() || null,
     category: category.trim(),
     condition,
     imageUrl: imageUrl.trim(),

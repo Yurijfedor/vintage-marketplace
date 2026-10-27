@@ -17,6 +17,8 @@ import type {
   ProductCondition,
 } from "../types/product";
 
+import "../styles/create-product.css";
+
 const productConditions: ProductCondition[] = [
   "new",
   "very-good",
@@ -38,6 +40,7 @@ function EditListingPage() {
   const product = products.find((item) => item.id === productId);
 
   const [title, setTitle] = useState(product?.title ?? "");
+  const [description, setDescription] = useState(product?.description ?? "");
   const [category, setCategory] = useState(product?.category ?? "");
   const [condition, setCondition] = useState<ProductCondition>(
     product?.condition ?? "good",
@@ -49,6 +52,12 @@ function EditListingPage() {
 
   const [price, setPrice] = useState(
     product?.listingType === "fixed-price" ? String(product.price) : "",
+  );
+
+  const [stockQuantity, setStockQuantity] = useState(
+    product?.listingType === "fixed-price"
+      ? String(product.stockQuantity)
+      : "1",
   );
 
   const [startingPrice, setStartingPrice] = useState(
@@ -168,6 +177,16 @@ function EditListingPage() {
         setErrorMessage("Введіть коректну ціну.");
         return;
       }
+      const numericStockQuantity = Number(stockQuantity);
+
+      if (
+        stockQuantity.trim() === "" ||
+        !Number.isInteger(numericStockQuantity) ||
+        numericStockQuantity < 0
+      ) {
+        setErrorMessage("Введіть цілу невід’ємну кількість товару.");
+        return;
+      }
     } else {
       numericStartingPrice = Number(startingPrice);
 
@@ -210,11 +229,12 @@ function EditListingPage() {
         const updatedProduct: FixedPriceProduct = {
           id: currentProduct.id,
           title: trimmedTitle,
+          description: description.trim() || null,
           category,
           condition,
           listingType: "fixed-price",
           price: numericPrice!,
-          stockQuantity: currentProduct.stockQuantity,
+          stockQuantity: Number(stockQuantity),
           availableQuantity: currentProduct.availableQuantity,
           imageUrl: finalImageUrl,
           sellerName: currentProduct.sellerName,
@@ -237,6 +257,7 @@ function EditListingPage() {
         const updatedProduct: AuctionProduct = {
           id: currentProduct.id,
           title: trimmedTitle,
+          description: description.trim() || null,
           category,
           condition,
           listingType: "auction",
@@ -316,6 +337,18 @@ function EditListingPage() {
             </label>
 
             <label>
+              Опис товару
+              <textarea
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Опишіть товар, його стан, вік, особливості та дефекти"
+                rows={5}
+                maxLength={5000}
+                disabled={isSubmitting || isDeleting}
+              />
+            </label>
+
+            <label>
               Категорія
               <select
                 value={category}
@@ -352,7 +385,11 @@ function EditListingPage() {
 
               {imagePreview || imageUrl ? (
                 <div className="product-image-upload__preview">
-                  <img src={imagePreview || imageUrl} alt="Фотографія товару" />
+                  <img
+                    className="product-image-upload__preview-image"
+                    src={imagePreview || imageUrl}
+                    alt="Фотографія товару"
+                  />
                 </div>
               ) : null}
 
@@ -399,21 +436,34 @@ function EditListingPage() {
             </label>
 
             {listingType === "fixed-price" ? (
-              <label>
-                Ціна (€)
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  value={price}
-                  onChange={(event) => setPrice(event.target.value)}
-                  disabled={isSubmitting || isDeleting}
-                />
-              </label>
+              <>
+                <label>
+                  Ціна (₴)
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    value={price}
+                    onChange={(event) => setPrice(event.target.value)}
+                    disabled={isSubmitting || isDeleting}
+                  />
+                </label>
+                <label>
+                  Кількість товару (шт.)
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={stockQuantity}
+                    onChange={(event) => setStockQuantity(event.target.value)}
+                    disabled={isSubmitting || isDeleting}
+                  />
+                </label>
+              </>
             ) : (
               <>
                 <label>
-                  Початкова ціна (€)
+                  Початкова ціна (₴)
                   <input
                     type="number"
                     min="0.01"

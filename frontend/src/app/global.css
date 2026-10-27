@@ -563,6 +563,12 @@ input {
   line-height: 1.35;
 }
 
+.home-page .product-card__description {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #666;
+}
+
 .product-card__footer {
   display: flex;
   flex-direction: column;
